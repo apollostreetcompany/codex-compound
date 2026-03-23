@@ -1,7 +1,7 @@
 # HANDOFF.md - Codex-Compound
 
 ## Current Status
-Bead 4 is implemented and validated locally: the OpenClaw target now emits an ACP-backed Codex relay skeleton for `compound-engineering`, including an OpenClaw-only bridge skill, example ACP config, and manifest config fields. All scheduled beads are complete; the next practical step is to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
+Bead 6 is implemented and validated locally: the OpenClaw converter now normalizes namespaced command registrations and generated command skill directories with the same helper, and the writer test suite now exercises the written `index.ts` runtime path to confirm those commands resolve correctly from disk. All scheduled beads are complete; the next practical step is to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
 
 ## Delivered
 - Imported upstream baseline content into `/Users/borker/dev/codex-compound`.
@@ -35,6 +35,8 @@ Bead 4 is implemented and validated locally: the OpenClaw target now emits an AC
 - Extended the OpenClaw bundle type so it can emit bridge support files alongside generated skills.
 - Added `openclaw-codex-acp-bridge` generation for `compound-engineering`, including bridge instructions and `bridge/codex-acp-bridge.example.json`.
 - Updated root and plugin docs to describe the ACP-backed OpenClaw -> Codex planning handoff path and its limits.
+- Normalized OpenClaw command skill directories and command registration names through the same converter helper so namespaced commands preserve one runtime lookup key.
+- Added an end-to-end OpenClaw writer/runtime regression that writes a bundle, imports the generated `index.ts`, and verifies a namespaced command returns the expected skill body.
 
 ## Validation Evidence
 - `bun test` -> pass (364 tests)
@@ -54,6 +56,9 @@ Bead 4 is implemented and validated locally: the OpenClaw target now emits an AC
 - `bun test tests/openclaw-converter.test.ts tests/openclaw-writer.test.ts tests/sync-openclaw.test.ts` -> pass
 - `bun test` -> pass (381 tests)
 - `bun run release:validate` -> pass after the OpenClaw bridge skeleton
+- `bun test tests/openclaw-converter.test.ts tests/openclaw-writer.test.ts tests/sync-openclaw.test.ts tests/cli.test.ts` -> pass (33 tests)
+- `bun test` -> pass (383 tests)
+- `bun run release:validate` -> pass after the OpenClaw command normalization follow-up
 
 ## Current Defaults
 - Codex owns the session and PTY.
@@ -64,6 +69,7 @@ Bead 4 is implemented and validated locally: the OpenClaw target now emits an AC
 - RES Snatcher planning is the first dogfood acceptance scenario and will run in a separate scratch test case.
 - Relative local plugin paths with separators now resolve locally while bare plugin names still prefer GitHub.
 - The first OpenClaw bridge cut is ACP-first. It assumes `@openclaw/acpx`, Codex CLI on the OpenClaw host, and thread-bound ACP sessions rather than a custom plugin-managed PTY.
+- Generated OpenClaw command identity is canonicalized at conversion time, so namespaced command registrations and `skills/cmd-*` directories cannot drift apart.
 
 ## Immediate Follow-Ups
 1. Compare the RES Snatcher Codex-first plan against an OpenClaw-driven pass using the new ACP bridge skeleton.

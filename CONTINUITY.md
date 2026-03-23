@@ -42,6 +42,7 @@ Success criteria:
 16. Anchor the RES Snatcher feasibility plan to official vendor docs: Firecrawl `/search` plus `/extract`, and ElevenLabs Twilio native integration with `verified caller ID` as the outbound-only fallback.
 17. Treat install inputs that contain path separators as local plugin paths while preserving bare plugin names as GitHub-resolved identifiers.
 18. Implement the first OpenClaw bridge cut as an ACP-backed Codex relay skeleton, not a custom PTY runtime: generate an OpenClaw-only bridge skill, example ACP config, and manifest config fields that make Codex the planning owner while OpenClaw remains the operator-facing relay.
+19. Normalize generated OpenClaw command registration names and command skill directory names with the same helper in the converter so namespaced commands remain loadable after bundle writeout.
 
 ## State
 
@@ -58,6 +59,7 @@ Success criteria:
 - [x] Completed Bead 3 - create the RES Snatcher scratch test case and capture a feasibility-quality Codex-first planning run.
 - [x] Completed Bead 4 - add the initial OpenClaw ACP relay and Codex PTY bridge skeleton.
 - [x] Completed Bead 5 - fix relative local plugin path resolution and strengthen compatibility coverage for root plugin metadata.
+- [x] Completed Bead 6 - normalize OpenClaw command skill directories so namespaced commands resolve at runtime.
 
 ### Now
 - All scheduled beads are complete. The repo is ready for an OpenClaw-driven comparison pass against the RES Snatcher planning test case.

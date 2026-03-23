@@ -76,7 +76,7 @@ describe("convertClaudeToOpenClaw", () => {
 
     const cmdSkill = bundle.skills.find((s) => s.name === "workflows:plan")
     expect(cmdSkill).toBeDefined()
-    expect(cmdSkill!.dir).toBe("cmd-workflows:plan")
+    expect(cmdSkill!.dir).toBe("cmd-workflows-plan")
 
     const disabledSkill = bundle.skills.find((s) => s.name === "disabled-cmd")
     expect(disabledSkill).toBeUndefined()
@@ -102,6 +102,17 @@ describe("convertClaudeToOpenClaw", () => {
     expect(cmd!.name).not.toContain(":")
   })
 
+  test("command skill directories normalize to the same key used by command registrations", () => {
+    const bundle = convertClaudeToOpenClaw(fixturePlugin, defaultOptions)
+
+    const cmdSkill = bundle.skills.find((s) => s.name === "workflows:plan")
+    const cmd = bundle.commands.find((c) => c.name === "workflows-plan")
+
+    expect(cmdSkill).toBeDefined()
+    expect(cmd).toBeDefined()
+    expect(cmdSkill!.dir.replace(/^cmd-/, "")).toBe(cmd!.name)
+  })
+
   test("manifest includes plugin id, display name, and skills list", () => {
     const bundle = convertClaudeToOpenClaw(fixturePlugin, defaultOptions)
 
@@ -110,7 +121,7 @@ describe("convertClaudeToOpenClaw", () => {
     expect(bundle.manifest.kind).toBe("tool")
     expect(bundle.manifest.configSchema.type).toBe("object")
     expect(bundle.manifest.skills).toContain("skills/agent-security-reviewer")
-    expect(bundle.manifest.skills).toContain("skills/cmd-workflows:plan")
+    expect(bundle.manifest.skills).toContain("skills/cmd-workflows-plan")
     expect(bundle.manifest.skills).toContain("skills/existing-skill")
   })
 

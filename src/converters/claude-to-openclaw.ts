@@ -138,6 +138,7 @@ function convertAgentToSkill(agent: ClaudeAgent): OpenClawSkillFile {
 }
 
 function convertCommandToSkill(command: ClaudeCommand): OpenClawSkillFile {
+  const normalizedName = normalizeOpenClawCommandName(command.name)
   const frontmatter: Record<string, unknown> = {
     name: `cmd-${command.name}`,
     description: command.description,
@@ -153,13 +154,13 @@ function convertCommandToSkill(command: ClaudeCommand): OpenClawSkillFile {
   return {
     name: command.name,
     content,
-    dir: `cmd-${command.name}`,
+    dir: `cmd-${normalizedName}`,
   }
 }
 
 function convertCommand(command: ClaudeCommand): OpenClawCommandRegistration {
   return {
-    name: command.name.replace(/:/g, "-"),
+    name: normalizeOpenClawCommandName(command.name),
     description: command.description ?? `Run ${command.name}`,
     acceptsArgs: Boolean(command.argumentHint),
     body: rewritePaths(command.body),
@@ -403,4 +404,8 @@ function formatDisplayName(name: string): string {
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ")
+}
+
+function normalizeOpenClawCommandName(name: string): string {
+  return name.replace(/:/g, "-")
 }
