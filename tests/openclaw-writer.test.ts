@@ -27,6 +27,12 @@ describe("writeOpenClawBundle", () => {
       skills: [],
       skillDirCopies: [],
       commands: [],
+      supportFiles: [
+        {
+          path: "bridge/codex-acp-bridge.example.json",
+          content: "{\n  \"acp\": { \"defaultAgent\": \"codex\" }\n}",
+        },
+      ],
     }
 
     await writeOpenClawBundle(tempRoot, bundle)
@@ -39,5 +45,10 @@ describe("writeOpenClawBundle", () => {
       type: "object",
       properties: {},
     })
+
+    const bridgeConfig = JSON.parse(
+      await fs.readFile(path.join(tempRoot, "bridge", "codex-acp-bridge.example.json"), "utf8"),
+    )
+    expect(bridgeConfig.acp.defaultAgent).toBe("codex")
   })
 })

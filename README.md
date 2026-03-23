@@ -93,6 +93,22 @@ bun run src/index.ts install ./plugins/compound-engineering --to codex
 bun run src/index.ts install ./plugins/compound-engineering --to opencode
 ```
 
+### OpenClaw ACP Bridge Skeleton
+
+When you install `compound-engineering` to `openclaw`, the bundle now includes:
+
+- `skills/openclaw-codex-acp-bridge/SKILL.md`
+- `bridge/codex-acp-bridge.example.json`
+
+This is an ACP-first relay skeleton, not a custom plugin-managed PTY. It assumes the OpenClaw host machine has Codex CLI installed plus the `@openclaw/acpx` backend plugin, and it documents the handoff path where Codex owns the planning session while OpenClaw remains the operator-facing relay:
+
+- `/acp spawn codex --mode persistent --thread auto --cwd /absolute/path/to/repo`
+- `/acp steer ...`
+- `/acp status`
+- `/acp close`
+
+Attach-to-existing sessions and durable resume are intentionally deferred from this first bridge cut.
+
 <details>
 <summary>Output format details per target</summary>
 
@@ -105,7 +121,7 @@ bun run src/index.ts install ./plugins/compound-engineering --to opencode
 | `gemini` | `.gemini/` | Skills from agents; commands as `.toml`; namespaced commands become directories (`workflows:plan` → `commands/workflows/plan.toml`) |
 | `copilot` | `.github/` | Agents as `.agent.md` with Copilot frontmatter; MCP env vars prefixed with `COPILOT_MCP_` |
 | `kiro` | `.kiro/` | Agents as JSON configs + prompt `.md` files; only stdio MCP servers supported |
-| `openclaw` | `~/.openclaw/extensions/<plugin>/` | Entry-point TypeScript skill file; `openclaw-extension.json` for MCP servers |
+| `openclaw` | `~/.openclaw/extensions/<plugin>/` | Entry-point TypeScript skill file; `openclaw.plugin.json`; optional `openclaw.json`; `compound-engineering` also emits ACP bridge scaffolding under `bridge/` |
 | `windsurf` | `~/.codeium/windsurf/` (global) or `.windsurf/` (workspace) | Agents become skills; commands become flat workflows; `mcp_config.json` merged |
 | `qwen` | `~/.qwen/extensions/<plugin>/` | Agents as `.yaml`; env vars with placeholders extracted as settings; colon separator for nested commands |
 
@@ -182,7 +198,7 @@ Notes:
 - Copilot sync writes personal skills to `~/.copilot/skills/` and MCP config to `~/.copilot/mcp-config.json`.
 - Gemini sync writes MCP config to `~/.gemini/` and avoids mirroring skills that Gemini already discovers from `~/.agents/skills`, which prevents duplicate-skill warnings.
 - Droid, Windsurf, Kiro, and Qwen sync merge MCP servers into the provider's documented user config.
-- OpenClaw currently syncs skills only. Personal command sync is skipped because this repo does not yet have a documented user-level OpenClaw command surface, and MCP sync is skipped because the current official OpenClaw docs do not clearly document an MCP server config contract.
+- OpenClaw currently syncs skills only. Personal command sync is skipped because this repo does not yet map Claude personal commands into a documented OpenClaw user-level command surface, and MCP sync is still skipped because this repo does not yet translate Claude personal MCP settings into a documented OpenClaw user config contract.
 
 ## Workflow
 

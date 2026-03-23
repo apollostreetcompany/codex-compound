@@ -1,7 +1,7 @@
 # HANDOFF.md - Codex-Compound
 
 ## Current Status
-Bead 5 is implemented and validated locally: relative local plugin paths now resolve correctly during install, and compatibility coverage now explicitly locks the root plugin-manifest repo URLs. The next scheduled major item is Bead 4, the initial OpenClaw relay and Codex PTY bridge skeleton.
+Bead 4 is implemented and validated locally: the OpenClaw target now emits an ACP-backed Codex relay skeleton for `compound-engineering`, including an OpenClaw-only bridge skill, example ACP config, and manifest config fields. All scheduled beads are complete; the next practical step is to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
 
 ## Delivered
 - Imported upstream baseline content into `/Users/borker/dev/codex-compound`.
@@ -32,6 +32,9 @@ Bead 5 is implemented and validated locally: relative local plugin paths now res
 - Replaced the draft RES Snatcher plan with `docs/plans/2026-03-23-001-feat-res-snatcher-hackathon-plan.md`, which records assumptions, feasibility boundaries, and implementation beads.
 - Fixed `install` path resolution so separator-containing relative inputs are treated as local plugin paths instead of GitHub names.
 - Added CLI coverage for relative local plugin installs and root-identity coverage for plugin manifest repo URLs.
+- Extended the OpenClaw bundle type so it can emit bridge support files alongside generated skills.
+- Added `openclaw-codex-acp-bridge` generation for `compound-engineering`, including bridge instructions and `bridge/codex-acp-bridge.example.json`.
+- Updated root and plugin docs to describe the ACP-backed OpenClaw -> Codex planning handoff path and its limits.
 
 ## Validation Evidence
 - `bun test` -> pass (364 tests)
@@ -48,6 +51,9 @@ Bead 5 is implemented and validated locally: relative local plugin paths now res
 - `bun run release:validate` -> pass after the workflow rewrite
 - `bun test tests/res-snatcher-test-case.test.ts` -> pass
 - `bun test tests/cli.test.ts tests/root-identity.test.ts` -> pass
+- `bun test tests/openclaw-converter.test.ts tests/openclaw-writer.test.ts tests/sync-openclaw.test.ts` -> pass
+- `bun test` -> pass (381 tests)
+- `bun run release:validate` -> pass after the OpenClaw bridge skeleton
 
 ## Current Defaults
 - Codex owns the session and PTY.
@@ -57,12 +63,13 @@ Bead 5 is implemented and validated locally: relative local plugin paths now res
 - `handoff/beads.jsonl` will hold per-bead evidence.
 - RES Snatcher planning is the first dogfood acceptance scenario and will run in a separate scratch test case.
 - Relative local plugin paths with separators now resolve locally while bare plugin names still prefer GitHub.
+- The first OpenClaw bridge cut is ACP-first. It assumes `@openclaw/acpx`, Codex CLI on the OpenClaw host, and thread-bound ACP sessions rather than a custom plugin-managed PTY.
 
 ## Immediate Follow-Ups
-1. Add the initial OpenClaw relay and Codex PTY bridge skeleton after the Codex-first planning flow is stable.
-2. Compare the RES Snatcher Codex-first plan against an OpenClaw-driven pass once the bridge exists.
-3. Decide which imported surfaces remain core versus compatibility.
-4. Decide whether attach/resume support belongs in the first PTY bridge cut or a later bead.
+1. Compare the RES Snatcher Codex-first plan against an OpenClaw-driven pass using the new ACP bridge skeleton.
+2. Decide whether attach/resume support belongs in the next bridge bead.
+3. Decide whether OpenClaw personal command sync remains a warning path or gains a documented conversion surface.
+4. Decide which imported surfaces remain core versus compatibility.
 
 ## Recent Bead Commits
 - `84edeb229ddba1940cd93321cc742f1b09fd9481` contains Bead 5, which fixes relative local plugin path resolution and adds compatibility coverage for plugin-manifest repo URLs.

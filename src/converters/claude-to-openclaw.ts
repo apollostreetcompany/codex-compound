@@ -8,8 +8,11 @@ import type {
 import type {
   OpenClawBundle,
   OpenClawCommandRegistration,
+  OpenClawConfigProperty,
   OpenClawPluginManifest,
   OpenClawSkillFile,
+  OpenClawSupportFile,
+  OpenClawUiHint,
 } from "../types/openclaw"
 import type { ClaudeToOpenCodeOptions } from "./claude-to-opencode"
 
@@ -20,12 +23,17 @@ export function convertClaudeToOpenClaw(
   _options: ClaudeToOpenClawOptions,
 ): OpenClawBundle {
   const enabledCommands = plugin.commands.filter((cmd) => !cmd.disableModelInvocation)
+  const bridgeScaffold = buildBridgeScaffold(plugin)
 
   const agentSkills = plugin.agents.map(convertAgentToSkill)
   const commandSkills = enabledCommands.map(convertCommandToSkill)
   const commands = enabledCommands.map(convertCommand)
 
-  const skills: OpenClawSkillFile[] = [...agentSkills, ...commandSkills]
+  const skills: OpenClawSkillFile[] = [
+    ...agentSkills,
+    ...commandSkills,
+    ...bridgeScaffold.skills,
+  ]
 
   const skillDirCopies = plugin.skills.map((skill) => ({
     sourceDir: skill.sourceDir,
@@ -35,10 +43,16 @@ export function convertClaudeToOpenClaw(
   const allSkillDirs = [
     ...agentSkills.map((s) => s.dir),
     ...commandSkills.map((s) => s.dir),
+    ...bridgeScaffold.skills.map((s) => s.dir),
     ...plugin.skills.map((s) => s.name),
   ]
 
-  const manifest = buildManifest(plugin, allSkillDirs)
+  const manifest = buildManifest(
+    plugin,
+    allSkillDirs,
+    bridgeScaffold.configProperties,
+    bridgeScaffold.uiHints,
+  )
 
   const packageJson = buildPackageJson(plugin)
 
@@ -55,19 +69,26 @@ export function convertClaudeToOpenClaw(
     skills,
     skillDirCopies,
     commands,
+    supportFiles: bridgeScaffold.supportFiles,
     openclawConfig,
   }
 }
 
-function buildManifest(plugin: ClaudePlugin, skillDirs: string[]): OpenClawPluginManifest {
+function buildManifest(
+  plugin: ClaudePlugin,
+  skillDirs: string[],
+  configProperties: Record<string, OpenClawConfigProperty>,
+  uiHints?: Record<string, OpenClawUiHint>,
+): OpenClawPluginManifest {
   return {
     id: plugin.manifest.name,
     name: formatDisplayName(plugin.manifest.name),
     kind: "tool",
     configSchema: {
       type: "object",
-      properties: {},
+      properties: configProperties,
     },
+    uiHints,
     skills: skillDirs.map((dir) => `skills/${dir}`),
   }
 }
@@ -142,6 +163,147 @@ function convertCommand(command: ClaudeCommand): OpenClawCommandRegistration {
     description: command.description ?? `Run ${command.name}`,
     acceptsArgs: Boolean(command.argumentHint),
     body: rewritePaths(command.body),
+  }
+}
+
+type OpenClawBridgeScaffold = {
+  skills: OpenClawSkillFile[]
+  supportFiles: OpenClawSupportFile[]
+  configProperties: Record<string, OpenClawConfigProperty>
+  uiHints?: Record<string, OpenClawUiHint>
+}
+
+function buildBridgeScaffold(plugin: ClaudePlugin): OpenClawBridgeScaffold {
+  if (plugin.manifest.name !== "compound-engineering") {
+    return {
+      skills: [],
+      supportFiles: [],
+      configProperties: {},
+    }
+  }
+
+  const content = formatFrontmatter(
+    {
+      name: "openclaw-codex-acp-bridge",
+      description: "Relay compound-engineering planning to Codex through OpenClaw ACP sessions.",
+    },
+    [
+      "# OpenClaw Codex ACP Bridge",
+      "",
+      "Use this when an Opus-driven OpenClaw session should hand compound-engineering planning to Codex.",
+      "",
+      "Codex owns the planning session. OpenClaw stays in the user-facing thread and relays follow-ups.",
+      "",
+      "## Preconditions",
+      "- Codex CLI is installed and authenticated on the OpenClaw host machine.",
+      "- The target repository is checked out on that same host machine.",
+      "- The `@openclaw/acpx` backend plugin is installed and healthy.",
+      "- ACP dispatch and thread binding are enabled for the active channel.",
+      "",
+      "## Start the planning session",
+      "1. `/acp spawn codex --mode persistent --thread auto --cwd /absolute/path/to/repo`",
+      "2. In the spawned Codex session, run `/ce:brainstorm` or `/ce:plan` with the active feature brief.",
+      "3. Keep the OpenClaw thread bound to that ACP session so user replies continue steering the same Codex run.",
+      "",
+      "## Relay clarifying questions",
+      "- Use `/acp steer <instruction>` when Codex needs a clarification or new constraint.",
+      "- Use `/acp status` or `/acp sessions` to inspect live progress.",
+      "- Use `/acp close` when the planning session is complete or must be replaced.",
+      "",
+      "## Scope limits",
+      "- This first bridge cut assumes OpenClaw ACP sessions, not a custom plugin-managed PTY runtime.",
+      "- Attach-to-existing sessions and durable resume semantics are follow-up work.",
+      "- If Codex CLI, ACP backend, or repo checkout is missing on the OpenClaw host, stop and ask for remediation instead of faking progress.",
+      "",
+      "## Suggested config",
+      "- See `bridge/codex-acp-bridge.example.json` for a documented ACP + thread-binding baseline.",
+    ].join("\n"),
+  )
+
+  return {
+    skills: [
+      {
+        name: "openclaw-codex-acp-bridge",
+        dir: "openclaw-codex-acp-bridge",
+        content,
+      },
+    ],
+    supportFiles: [
+      {
+        path: "bridge/codex-acp-bridge.example.json",
+        content: JSON.stringify(
+          {
+            acp: {
+              enabled: true,
+              dispatch: { enabled: true },
+              backend: "acpx",
+              defaultAgent: "codex",
+              allowedAgents: ["codex"],
+              runtime: { ttlMinutes: 120 },
+            },
+            agents: {
+              list: [
+                {
+                  id: "codex",
+                  runtime: {
+                    type: "acp",
+                    acp: {
+                      agent: "codex",
+                      backend: "acpx",
+                      mode: "persistent",
+                      cwd: "/absolute/path/to/repo",
+                    },
+                  },
+                },
+              ],
+            },
+            channels: {
+              discord: {
+                threadBindings: {
+                  enabled: true,
+                  spawnAcpSessions: true,
+                  idleHours: 24,
+                  maxAgeHours: 0,
+                },
+              },
+            },
+          },
+          null,
+          2,
+        ),
+      },
+    ],
+    configProperties: {
+      planningAgentId: {
+        type: "string",
+        description: "ACP agent id to use when OpenClaw hands compound-engineering planning to Codex.",
+        default: "codex",
+      },
+      planningMode: {
+        type: "string",
+        description: "ACP session mode for Codex planning handoff.",
+        default: "persistent",
+      },
+      requireThreadBinding: {
+        type: "boolean",
+        description: "Require thread binding when the active OpenClaw channel supports ACP thread-bound sessions.",
+        default: true,
+      },
+      defaultCwd: {
+        type: "string",
+        description: "Absolute repository path on the OpenClaw host machine for Codex ACP spawns.",
+      },
+    },
+    uiHints: {
+      planningAgentId: {
+        label: "Planning ACP agent id",
+        placeholder: "codex",
+      },
+      defaultCwd: {
+        label: "Codex working directory",
+        placeholder: "/absolute/path/to/repo",
+      },
+    },
   }
 }
 

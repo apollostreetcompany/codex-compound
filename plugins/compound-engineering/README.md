@@ -12,6 +12,21 @@ This derivative expects the host repo to keep:
 - `handoff/beads.jsonl` as the per-bead execution record
 - `docs/learnings/projects/`, `docs/learnings/project-types/`, and `docs/learnings/global/` as the durable learning hierarchy
 
+## OpenClaw Codex Bridge
+
+When this plugin is installed to the `openclaw` target, Codex-Compound now emits an OpenClaw-only bridge skeleton:
+
+- `skills/openclaw-codex-acp-bridge/SKILL.md`
+- `bridge/codex-acp-bridge.example.json`
+
+This is an ACP-backed handoff path, not a custom PTY implementation. The intended operator flow is:
+
+1. Install and enable `@openclaw/acpx` on the OpenClaw host.
+2. Spawn Codex with `/acp spawn codex --mode persistent --thread auto --cwd /absolute/path/to/repo`.
+3. Relay follow-ups with `/acp steer`, inspect with `/acp status`, and close with `/acp close`.
+
+The bridge assumes Codex owns the planning session while OpenClaw remains the visible conversational relay. Attach/resume beyond the ACP thread-binding path is deferred.
+
 ## Components
 
 | Component | Count |

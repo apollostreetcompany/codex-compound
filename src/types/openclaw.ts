@@ -41,6 +41,11 @@ export type OpenClawCommandRegistration = {
   body: string
 }
 
+export type OpenClawSupportFile = {
+  path: string
+  content: string
+}
+
 export type OpenClawBundle = {
   manifest: OpenClawPluginManifest
   packageJson: Record<string, unknown>
@@ -49,6 +54,7 @@ export type OpenClawBundle = {
   /** Skill directories to copy verbatim (original Claude skills with references/) */
   skillDirCopies: { sourceDir: string; name: string }[]
   commands: OpenClawCommandRegistration[]
+  supportFiles: OpenClawSupportFile[]
   /** openclaw.json fragment for MCP servers */
   openclawConfig?: Record<string, unknown>
 }

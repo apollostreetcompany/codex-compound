@@ -108,13 +108,45 @@ describe("convertClaudeToOpenClaw", () => {
     expect(bundle.manifest.id).toBe("compound-engineering")
     expect(bundle.manifest.name).toBe("Compound Engineering")
     expect(bundle.manifest.kind).toBe("tool")
-    expect(bundle.manifest.configSchema).toEqual({
-      type: "object",
-      properties: {},
-    })
+    expect(bundle.manifest.configSchema.type).toBe("object")
     expect(bundle.manifest.skills).toContain("skills/agent-security-reviewer")
     expect(bundle.manifest.skills).toContain("skills/cmd-workflows:plan")
     expect(bundle.manifest.skills).toContain("skills/existing-skill")
+  })
+
+  test("compound-engineering bundle includes ACP bridge config and skill scaffolding", () => {
+    const bundle = convertClaudeToOpenClaw(fixturePlugin, defaultOptions)
+
+    expect(bundle.manifest.configSchema.properties.planningAgentId).toBeDefined()
+    expect(bundle.manifest.configSchema.properties.planningMode).toBeDefined()
+    expect(bundle.manifest.configSchema.properties.requireThreadBinding).toBeDefined()
+
+    const bridgeSkill = bundle.skills.find((skill) => skill.dir === "openclaw-codex-acp-bridge")
+    expect(bridgeSkill).toBeDefined()
+    expect(bridgeSkill!.content).toContain("/acp spawn codex --mode persistent --thread auto")
+    expect(bridgeSkill!.content).toContain("/acp steer")
+    expect(bridgeSkill!.content).toContain("/acp status")
+    expect(bridgeSkill!.content).toContain("Codex owns the planning session")
+
+    const bridgeConfig = bundle.supportFiles.find(
+      (file) => file.path === "bridge/codex-acp-bridge.example.json",
+    )
+    expect(bridgeConfig).toBeDefined()
+    expect(bridgeConfig!.content).toContain("\"defaultAgent\": \"codex\"")
+    expect(bridgeConfig!.content).toContain("\"spawnAcpSessions\": true")
+  })
+
+  test("non-compound plugins do not receive the ACP bridge scaffolding", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      manifest: { ...fixturePlugin.manifest, name: "sample-plugin" },
+    }
+
+    const bundle = convertClaudeToOpenClaw(plugin, defaultOptions)
+
+    expect(bundle.supportFiles).toEqual([])
+    expect(bundle.skills.some((skill) => skill.dir === "openclaw-codex-acp-bridge")).toBe(false)
+    expect(bundle.manifest.configSchema.properties.planningAgentId).toBeUndefined()
   })
 
   test("package.json uses plugin name and version", () => {

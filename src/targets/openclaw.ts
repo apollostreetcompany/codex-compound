@@ -31,6 +31,12 @@ export async function writeOpenClawBundle(outputRoot: string, bundle: OpenClawBu
     await rewritePathsInDir(destDir)
   }
 
+  for (const file of bundle.supportFiles) {
+    const filePath = path.join(paths.root, file.path)
+    await ensureDir(path.dirname(filePath))
+    await writeText(filePath, file.content.endsWith("\n") ? file.content : `${file.content}\n`)
+  }
+
   // Write openclaw.json config fragment if MCP servers exist
   if (bundle.openclawConfig) {
     const configPath = path.join(paths.root, "openclaw.json")

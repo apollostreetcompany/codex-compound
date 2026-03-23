@@ -41,6 +41,7 @@ Success criteria:
 15. Keep the scratch RES Snatcher workspace planning-only, but make it follow the same memory contract as the parent repo with local `HANDOFF.md`, `MISTAKES.md`, `Makefile`, and `handoff/` files.
 16. Anchor the RES Snatcher feasibility plan to official vendor docs: Firecrawl `/search` plus `/extract`, and ElevenLabs Twilio native integration with `verified caller ID` as the outbound-only fallback.
 17. Treat install inputs that contain path separators as local plugin paths while preserving bare plugin names as GitHub-resolved identifiers.
+18. Implement the first OpenClaw bridge cut as an ACP-backed Codex relay skeleton, not a custom PTY runtime: generate an OpenClaw-only bridge skill, example ACP config, and manifest config fields that make Codex the planning owner while OpenClaw remains the operator-facing relay.
 
 ## State
 
@@ -55,14 +56,16 @@ Success criteria:
 - [x] Completed Bead 1 - rename root package, CLI, repo source, and root metadata surfaces to Codex-Compound.
 - [x] Completed Bead 2 - rewrite core workflow skills and plugin docs around Codex-first memory, learnings, and bead execution.
 - [x] Completed Bead 3 - create the RES Snatcher scratch test case and capture a feasibility-quality Codex-first planning run.
+- [x] Completed Bead 4 - add the initial OpenClaw ACP relay and Codex PTY bridge skeleton.
 - [x] Completed Bead 5 - fix relative local plugin path resolution and strengthen compatibility coverage for root plugin metadata.
 
 ### Now
-- Ready for Bead 4 - define and implement the initial OpenClaw relay plus Codex PTY bridge skeleton.
+- All scheduled beads are complete. The repo is ready for an OpenClaw-driven comparison pass against the RES Snatcher planning test case.
 
 ### Next
-- Design the OpenClaw relay/PTY bridge after the Codex-first planning flow is stable.
-- Wire the initial OpenClaw relay and Codex PTY bridge skeleton after the dogfood planning path is proven.
+- Run the OpenClaw-driven planning comparison against the RES Snatcher test case.
+- Decide whether attach-to-existing Codex sessions belongs in the next bridge bead.
+- Decide whether OpenClaw personal command sync should remain a warning path or gain a documented conversion surface.
 
 ## Open Questions
 - Should all non-Codex/OpenClaw targets remain fully supported long-term, or become compatibility surfaces only? (UNCONFIRMED)
@@ -91,6 +94,9 @@ Success criteria:
 - `plugins/compound-engineering/AGENTS.md`
 - `plugins/compound-engineering/README.md`
 - `plugins/compound-engineering/`
+- `src/converters/claude-to-openclaw.ts`
+- `src/targets/openclaw.ts`
+- `src/types/openclaw.ts`
 - `test-case/res-snatcher/`
 - `src/`
 - `tests/`
