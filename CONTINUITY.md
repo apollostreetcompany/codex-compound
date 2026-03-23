@@ -38,6 +38,8 @@ Success criteria:
 12. Treat the import/scaffold bead as `Medium` risk because it changes many files and project-operating contracts, then validate it with `bun test`, `bun run release:validate`, and `bd doctor`.
 13. Adopt `codex-compound` as the root package/bin identity and `https://github.com/apollostreetcompany/codex-compound(.git)` as the default repo source while preserving downstream plugin IDs like `compound-engineering`.
 14. Make the core `ce:*` workflows Codex-first by explicitly grounding them in `AGENTS.md`, `CONTINUITY.md`, `.beads/`, `handoff/beads.jsonl`, and `docs/learnings/`, while treating `docs/solutions/` as legacy context during migration.
+15. Keep the scratch RES Snatcher workspace planning-only, but make it follow the same memory contract as the parent repo with local `HANDOFF.md`, `MISTAKES.md`, `Makefile`, and `handoff/` files.
+16. Anchor the RES Snatcher feasibility plan to official vendor docs: Firecrawl `/search` plus `/extract`, and ElevenLabs Twilio native integration with `verified caller ID` as the outbound-only fallback.
 
 ## State
 
@@ -51,12 +53,13 @@ Success criteria:
 - [x] Completed Bead 0 - import upstream baseline and scaffold Codex-Compound.
 - [x] Completed Bead 1 - rename root package, CLI, repo source, and root metadata surfaces to Codex-Compound.
 - [x] Completed Bead 2 - rewrite core workflow skills and plugin docs around Codex-first memory, learnings, and bead execution.
+- [x] Completed Bead 3 - create the RES Snatcher scratch test case and capture a feasibility-quality Codex-first planning run.
 
 ### Now
-- Ready for Bead 3 - create the RES Snatcher scratch test case and dogfood the Codex-first planning flow.
+- Ready for Bead 4 - define and implement the initial OpenClaw relay plus Codex PTY bridge skeleton.
 
 ### Next
-- Create a separate scratch test case for RES Snatcher planning.
+- Land Bead 5 - the low-risk CLI fix so relative local plugin paths resolve correctly without shadowing bare GitHub plugin names.
 - Design the OpenClaw relay/PTY bridge after the Codex-first planning flow is stable.
 - Wire the initial OpenClaw relay and Codex PTY bridge skeleton after the dogfood planning path is proven.
 
@@ -87,5 +90,6 @@ Success criteria:
 - `plugins/compound-engineering/AGENTS.md`
 - `plugins/compound-engineering/README.md`
 - `plugins/compound-engineering/`
+- `test-case/res-snatcher/`
 - `src/`
 - `tests/`
