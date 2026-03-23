@@ -1,5 +1,5 @@
 {
-  "name": "compound-engineering-plugin",
+  "name": "codex-compound",
   "owner": {
     "name": "Kieran Klaassen",
     "url": "https://github.com/kieranklaassen"
@@ -17,7 +17,7 @@
         "url": "https://github.com/kieranklaassen",
         "email": "kieran@every.to"
       },
-      "homepage": "https://github.com/EveryInc/compound-engineering-plugin",
+      "homepage": "https://github.com/apollostreetcompany/codex-compound",
       "tags": [
         "ai-powered",
         "compound-engineering",
@@ -35,7 +35,7 @@
       "author": {
         "name": "Nityesh Agarwal"
       },
-      "homepage": "https://github.com/EveryInc/compound-engineering-plugin",
+      "homepage": "https://github.com/apollostreetcompany/codex-compound",
       "tags": [
         "coding",
         "programming",

@@ -1,12 +1,12 @@
 {
-  "name": "compound-engineering",
+  "name": "codex-compound",
   "owner": {
     "name": "Kieran Klaassen",
     "email": "kieran@every.to",
     "url": "https://github.com/kieranklaassen"
   },
   "metadata": {
-    "description": "Cursor plugin marketplace for Every Inc plugins",
+    "description": "Cursor plugin marketplace for Codex-Compound plugins",
     "version": "1.0.1",
     "pluginRoot": "plugins"
   },

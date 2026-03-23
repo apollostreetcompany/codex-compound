@@ -6,9 +6,11 @@ import install from "./commands/install"
 import listCommand from "./commands/list"
 import sync from "./commands/sync"
 
-const main = defineCommand({
+export const CLI_NAME = "codex-compound"
+
+export const main = defineCommand({
   meta: {
-    name: "compound-plugin",
+    name: CLI_NAME,
     version: packageJson.version,
     description: "Convert Claude Code plugins into other agent formats",
   },
@@ -20,4 +22,6 @@ const main = defineCommand({
   },
 })
 
-runMain(main)
+if (import.meta.main) {
+  runMain(main)
+}

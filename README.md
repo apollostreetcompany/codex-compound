@@ -1,14 +1,14 @@
-# Compound Marketplace
+# Codex-Compound
 
-[![Build Status](https://github.com/EveryInc/compound-engineering-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/EveryInc/compound-engineering-plugin/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@every-env/compound-plugin)](https://www.npmjs.com/package/@every-env/compound-plugin)
+[![Build Status](https://github.com/apollostreetcompany/codex-compound/actions/workflows/ci.yml/badge.svg)](https://github.com/apollostreetcompany/codex-compound/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/codex-compound)](https://www.npmjs.com/package/codex-compound)
 
-A Claude Code plugin marketplace featuring the **Compound Engineering Plugin** â€” tools that make each unit of engineering work easier than the last.
+A Codex-first derivative of Compound Engineering that preserves the `ce:*` workflow surface while making `AGENTS.md`, `CONTINUITY.md`, `.beads/`, and `handoff/beads.jsonl` first-class.
 
 ## Claude Code Install
 
 ```bash
-/plugin marketplace add EveryInc/compound-engineering-plugin
+/plugin marketplace add apollostreetcompany/codex-compound
 /plugin install compound-engineering
 ```
 
@@ -22,42 +22,44 @@ A Claude Code plugin marketplace featuring the **Compound Engineering Plugin** â
 
 This repo includes a Bun/TypeScript CLI that converts Claude Code plugins to OpenCode, Codex, Factory Droid, Pi, Gemini CLI, GitHub Copilot, Kiro CLI, Windsurf, OpenClaw, and Qwen Code.
 
+Until the standalone npm package is published, run these commands from a checkout with `bun run src/index.ts ...`. The examples below show the intended installed command name.
+
 ```bash
 # convert the compound-engineering plugin into OpenCode format
-bunx @every-env/compound-plugin install compound-engineering --to opencode
+bunx codex-compound install compound-engineering --to opencode
 
 # convert to Codex format
-bunx @every-env/compound-plugin install compound-engineering --to codex
+bunx codex-compound install compound-engineering --to codex
 
 # convert to Factory Droid format
-bunx @every-env/compound-plugin install compound-engineering --to droid
+bunx codex-compound install compound-engineering --to droid
 
 # convert to Pi format
-bunx @every-env/compound-plugin install compound-engineering --to pi
+bunx codex-compound install compound-engineering --to pi
 
 # convert to Gemini CLI format
-bunx @every-env/compound-plugin install compound-engineering --to gemini
+bunx codex-compound install compound-engineering --to gemini
 
 # convert to GitHub Copilot format
-bunx @every-env/compound-plugin install compound-engineering --to copilot
+bunx codex-compound install compound-engineering --to copilot
 
 # convert to Kiro CLI format
-bunx @every-env/compound-plugin install compound-engineering --to kiro
+bunx codex-compound install compound-engineering --to kiro
 
 # convert to OpenClaw format
-bunx @every-env/compound-plugin install compound-engineering --to openclaw
+bunx codex-compound install compound-engineering --to openclaw
 
 # convert to Windsurf format (global scope by default)
-bunx @every-env/compound-plugin install compound-engineering --to windsurf
+bunx codex-compound install compound-engineering --to windsurf
 
 # convert to Windsurf workspace scope
-bunx @every-env/compound-plugin install compound-engineering --to windsurf --scope workspace
+bunx codex-compound install compound-engineering --to windsurf --scope workspace
 
 # convert to Qwen Code format
-bunx @every-env/compound-plugin install compound-engineering --to qwen
+bunx codex-compound install compound-engineering --to qwen
 
 # auto-detect installed tools and install to all
-bunx @every-env/compound-plugin install compound-engineering --to all
+bunx codex-compound install compound-engineering --to all
 ```
 
 ### Local Development
@@ -68,13 +70,13 @@ When developing and testing local changes to the plugin:
 
 ```bash
 # add to ~/.zshrc or ~/.bashrc
-alias claude-dev-ce='claude --plugin-dir ~/code/compound-engineering-plugin/plugins/compound-engineering'
+alias claude-dev-ce='claude --plugin-dir ~/code/codex-compound/plugins/compound-engineering'
 ```
 
 One-liner to append it:
 
 ```bash
-echo "alias claude-dev-ce='claude --plugin-dir ~/code/compound-engineering-plugin/plugins/compound-engineering'" >> ~/.zshrc
+echo "alias claude-dev-ce='claude --plugin-dir ~/code/codex-compound/plugins/compound-engineering'" >> ~/.zshrc
 ```
 
 Then run `claude-dev-ce` instead of `claude` to test your changes. Your production install stays untouched.
@@ -115,42 +117,44 @@ All provider targets are experimental and may change as the formats evolve.
 
 Sync your personal Claude Code config (`~/.claude/`) to other AI coding tools. Omit `--target` to sync to all detected supported tools automatically:
 
+Until the standalone npm package is published, run these commands from a checkout with `bun run src/index.ts sync ...`.
+
 ```bash
 # Sync to all detected tools (default)
-bunx @every-env/compound-plugin sync
+bunx codex-compound sync
 
 # Sync skills and MCP servers to OpenCode
-bunx @every-env/compound-plugin sync --target opencode
+bunx codex-compound sync --target opencode
 
 # Sync to Codex
-bunx @every-env/compound-plugin sync --target codex
+bunx codex-compound sync --target codex
 
 # Sync to Pi
-bunx @every-env/compound-plugin sync --target pi
+bunx codex-compound sync --target pi
 
 # Sync to Droid
-bunx @every-env/compound-plugin sync --target droid
+bunx codex-compound sync --target droid
 
 # Sync to GitHub Copilot (skills + MCP servers)
-bunx @every-env/compound-plugin sync --target copilot
+bunx codex-compound sync --target copilot
 
 # Sync to Gemini (skills + MCP servers)
-bunx @every-env/compound-plugin sync --target gemini
+bunx codex-compound sync --target gemini
 
 # Sync to Windsurf
-bunx @every-env/compound-plugin sync --target windsurf
+bunx codex-compound sync --target windsurf
 
 # Sync to Kiro
-bunx @every-env/compound-plugin sync --target kiro
+bunx codex-compound sync --target kiro
 
 # Sync to Qwen
-bunx @every-env/compound-plugin sync --target qwen
+bunx codex-compound sync --target qwen
 
 # Sync to OpenClaw (skills only; MCP is validation-gated)
-bunx @every-env/compound-plugin sync --target openclaw
+bunx codex-compound sync --target openclaw
 
 # Sync to all detected tools
-bunx @every-env/compound-plugin sync --target all
+bunx codex-compound sync --target all
 ```
 
 This syncs:

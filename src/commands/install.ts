@@ -224,6 +224,8 @@ type ResolvedPluginPath = {
   cleanup?: () => Promise<void>
 }
 
+export const DEFAULT_GITHUB_SOURCE = "https://github.com/apollostreetcompany/codex-compound.git"
+
 async function resolvePluginPath(input: string): Promise<ResolvedPluginPath> {
   // Only treat as a local path if it explicitly looks like one
   if (input.startsWith(".") || input.startsWith("/") || input.startsWith("~")) {
@@ -256,7 +258,7 @@ function resolveOutputRoot(value: unknown): string {
 }
 
 async function resolveGitHubPluginPath(pluginName: string): Promise<ResolvedPluginPath> {
-  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "compound-plugin-"))
+  const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-compound-"))
   const source = resolveGitHubSource()
   try {
     await cloneGitHubRepo(source, tempRoot)
@@ -279,10 +281,14 @@ async function resolveGitHubPluginPath(pluginName: string): Promise<ResolvedPlug
   }
 }
 
-function resolveGitHubSource(): string {
-  const override = process.env.COMPOUND_PLUGIN_GITHUB_SOURCE
-  if (override && override.trim()) return override.trim()
-  return "https://github.com/EveryInc/compound-engineering-plugin"
+export function resolveGitHubSource(): string {
+  const preferredOverride = process.env.CODEX_COMPOUND_GITHUB_SOURCE
+  if (preferredOverride && preferredOverride.trim()) return preferredOverride.trim()
+
+  const legacyOverride = process.env.COMPOUND_PLUGIN_GITHUB_SOURCE
+  if (legacyOverride && legacyOverride.trim()) return legacyOverride.trim()
+
+  return DEFAULT_GITHUB_SOURCE
 }
 
 async function cloneGitHubRepo(source: string, destination: string): Promise<void> {

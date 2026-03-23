@@ -1,13 +1,13 @@
 {
-  "name": "@every-env/compound-plugin",
+  "name": "codex-compound",
   "version": "2.49.0",
   "type": "module",
   "private": false,
   "bin": {
-    "compound-plugin": "src/index.ts"
+    "codex-compound": "src/index.ts"
   },
-  "homepage": "https://github.com/EveryInc/compound-engineering-plugin",
-  "repository": "https://github.com/EveryInc/compound-engineering-plugin",
+  "homepage": "https://github.com/apollostreetcompany/codex-compound",
+  "repository": "https://github.com/apollostreetcompany/codex-compound",
   "publishConfig": {
     "access": "public"
   },
