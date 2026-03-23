@@ -90,7 +90,7 @@ Bead 7 is complete: the global Codex home now contains only the `ce-plan` and `c
 4. Decide which imported surfaces remain core versus compatibility.
 
 ## Recent Bead Commits
-- pending: Bead 7 will record the global Codex visibility install and the clean OpenClaw upload artifact path.
+- `5504f975a02a58d50a241624e3d3ddc0fce3ddd7` contains Bead 7, which records the minimal global Codex visibility install and the clean OpenClaw upload artifact path and caveats.
 - `9ec45ea29e99ebd81ea873fc2875962aa8bc90ca` contains Bead 6, which normalizes OpenClaw command registration and command-skill directory names together and adds a written-bundle runtime regression for namespaced commands.
 - `a1b099ddf6bb15807c2768cb28055d51ae2a3bf3` contains Bead 4, which adds the ACP-backed OpenClaw -> Codex relay skeleton, generated bridge skill, example ACP config, and documentation updates.
 - `84edeb229ddba1940cd93321cc742f1b09fd9481` contains Bead 5, which fixes relative local plugin path resolution and adds compatibility coverage for plugin-manifest repo URLs.
