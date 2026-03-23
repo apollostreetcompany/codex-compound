@@ -1,7 +1,7 @@
 # HANDOFF.md - Codex-Compound
 
 ## Current Status
-Upstream `compound-engineering-plugin` `main` has been copied into a new independent repo and the root operating contract is being rewritten for Codex-first execution.
+Upstream `compound-engineering-plugin` `main` has been copied into a new independent repo, bead 0 has been committed and pushed, and the next step is the actual Codex-first rename/rewrite work.
 
 ## Delivered
 - Imported upstream baseline content into `/Users/borker/dev/codex-compound`.
@@ -42,3 +42,6 @@ Upstream `compound-engineering-plugin` `main` has been copied into a new indepen
 3. Rework the imported workflow/plugin docs for Codex-first behavior.
 4. Decide which imported surfaces remain core versus compatibility.
 5. Create the separate scratch test case for the RES Snatcher planning demo.
+
+## Latest Commit
+- `1b6ade8323abbcf10a4024877a11c62069036d85` on `codex/feat/bead-0-import-bootstrap`
