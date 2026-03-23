@@ -1,7 +1,42 @@
 import { describe, expect, test } from "bun:test"
+import claudeMarketplace from "../.claude-plugin/marketplace.json"
+import cursorMarketplace from "../.cursor-plugin/marketplace.json"
 import packageJson from "../package.json"
 import { DEFAULT_GITHUB_SOURCE, resolveGitHubSource } from "../src/commands/install"
 import { CLI_NAME, main } from "../src/index"
+
+const GITHUB_SOURCE_ENV_KEYS = ["CODEX_COMPOUND_GITHUB_SOURCE", "COMPOUND_PLUGIN_GITHUB_SOURCE"] as const
+
+function withGitHubSourceEnv(
+  overrides: Partial<Record<(typeof GITHUB_SOURCE_ENV_KEYS)[number], string | undefined>>,
+  callback: () => void,
+) {
+  const previous = Object.fromEntries(
+    GITHUB_SOURCE_ENV_KEYS.map((key) => [key, process.env[key]]),
+  ) as Record<(typeof GITHUB_SOURCE_ENV_KEYS)[number], string | undefined>
+
+  for (const key of GITHUB_SOURCE_ENV_KEYS) {
+    const value = overrides[key]
+    if (value === undefined) {
+      delete process.env[key]
+      continue
+    }
+    process.env[key] = value
+  }
+
+  try {
+    callback()
+  } finally {
+    for (const key of GITHUB_SOURCE_ENV_KEYS) {
+      const value = previous[key]
+      if (value === undefined) {
+        delete process.env[key]
+        continue
+      }
+      process.env[key] = value
+    }
+  }
+}
 
 describe("root identity", () => {
   test("package metadata reflects Codex-Compound", () => {
@@ -12,47 +47,38 @@ describe("root identity", () => {
   })
 
   test("default GitHub source points at Codex-Compound", () => {
-    const previous = process.env.COMPOUND_PLUGIN_GITHUB_SOURCE
-    delete process.env.COMPOUND_PLUGIN_GITHUB_SOURCE
-
-    try {
+    withGitHubSourceEnv({}, () => {
       expect(DEFAULT_GITHUB_SOURCE).toBe("https://github.com/apollostreetcompany/codex-compound.git")
       expect(resolveGitHubSource()).toBe(DEFAULT_GITHUB_SOURCE)
-    } finally {
-      if (previous === undefined) {
-        delete process.env.COMPOUND_PLUGIN_GITHUB_SOURCE
-      } else {
-        process.env.COMPOUND_PLUGIN_GITHUB_SOURCE = previous
-      }
-    }
+    })
   })
 
   test("new GitHub source override is preferred and legacy override still works", () => {
-    const previousNew = process.env.CODEX_COMPOUND_GITHUB_SOURCE
-    const previousLegacy = process.env.COMPOUND_PLUGIN_GITHUB_SOURCE
+    withGitHubSourceEnv(
+      {
+        CODEX_COMPOUND_GITHUB_SOURCE: "https://example.com/new.git",
+        COMPOUND_PLUGIN_GITHUB_SOURCE: "https://example.com/legacy.git",
+      },
+      () => {
+        expect(resolveGitHubSource()).toBe("https://example.com/new.git")
 
-    process.env.CODEX_COMPOUND_GITHUB_SOURCE = "https://example.com/new.git"
-    process.env.COMPOUND_PLUGIN_GITHUB_SOURCE = "https://example.com/legacy.git"
-    expect(resolveGitHubSource()).toBe("https://example.com/new.git")
-
-    delete process.env.CODEX_COMPOUND_GITHUB_SOURCE
-    expect(resolveGitHubSource()).toBe("https://example.com/legacy.git")
-
-    if (previousNew === undefined) {
-      delete process.env.CODEX_COMPOUND_GITHUB_SOURCE
-    } else {
-      process.env.CODEX_COMPOUND_GITHUB_SOURCE = previousNew
-    }
-
-    if (previousLegacy === undefined) {
-      delete process.env.COMPOUND_PLUGIN_GITHUB_SOURCE
-    } else {
-      process.env.COMPOUND_PLUGIN_GITHUB_SOURCE = previousLegacy
-    }
+        delete process.env.CODEX_COMPOUND_GITHUB_SOURCE
+        expect(resolveGitHubSource()).toBe("https://example.com/legacy.git")
+      },
+    )
   })
 
   test("CLI metadata exposes the codex-compound command name", () => {
     expect(CLI_NAME).toBe("codex-compound")
     expect(main.meta.name).toBe(CLI_NAME)
+  })
+
+  test("marketplace metadata reflects the codex-compound root identity", () => {
+    expect(claudeMarketplace.name).toBe("codex-compound")
+    expect(claudeMarketplace.plugins[0]?.homepage).toBe("https://github.com/apollostreetcompany/codex-compound")
+    expect(claudeMarketplace.plugins[1]?.homepage).toBe("https://github.com/apollostreetcompany/codex-compound")
+
+    expect(cursorMarketplace.name).toBe("codex-compound")
+    expect(cursorMarketplace.metadata.description).toBe("Cursor plugin marketplace for Codex-Compound plugins")
   })
 })
