@@ -1,7 +1,7 @@
 # HANDOFF.md - Codex-Compound
 
 ## Current Status
-Bead 3 is implemented and validated locally: the RES Snatcher scratch workspace now exercises the Codex-first planning path with canonical memory files, official-source research notes, and a feasibility-quality hackathon plan. The next scheduled major item is Bead 4, the initial OpenClaw relay and Codex PTY bridge skeleton, with one small CLI regression bead queued separately.
+Bead 5 is implemented and validated locally: relative local plugin paths now resolve correctly during install, and compatibility coverage now explicitly locks the root plugin-manifest repo URLs. The next scheduled major item is Bead 4, the initial OpenClaw relay and Codex PTY bridge skeleton.
 
 ## Delivered
 - Imported upstream baseline content into `/Users/borker/dev/codex-compound`.
@@ -30,6 +30,8 @@ Bead 3 is implemented and validated locally: the RES Snatcher scratch workspace 
 - Added local `HANDOFF.md`, `MISTAKES.md`, `Makefile`, `handoff/beads.jsonl`, and `handoff/beads.schema.json` inside the RES Snatcher test case.
 - Added official-source research notes for ElevenLabs Twilio native integration and Firecrawl `search` / `extract`.
 - Replaced the draft RES Snatcher plan with `docs/plans/2026-03-23-001-feat-res-snatcher-hackathon-plan.md`, which records assumptions, feasibility boundaries, and implementation beads.
+- Fixed `install` path resolution so separator-containing relative inputs are treated as local plugin paths instead of GitHub names.
+- Added CLI coverage for relative local plugin installs and root-identity coverage for plugin manifest repo URLs.
 
 ## Validation Evidence
 - `bun test` -> pass (364 tests)
@@ -45,6 +47,7 @@ Bead 3 is implemented and validated locally: the RES Snatcher scratch workspace 
 - `bun test` -> pass (375 tests)
 - `bun run release:validate` -> pass after the workflow rewrite
 - `bun test tests/res-snatcher-test-case.test.ts` -> pass
+- `bun test tests/cli.test.ts tests/root-identity.test.ts` -> pass
 
 ## Current Defaults
 - Codex owns the session and PTY.
@@ -53,13 +56,13 @@ Bead 3 is implemented and validated locally: the RES Snatcher scratch workspace 
 - `.beads/` will be the backlog source of truth.
 - `handoff/beads.jsonl` will hold per-bead evidence.
 - RES Snatcher planning is the first dogfood acceptance scenario and will run in a separate scratch test case.
-- Relative local plugin paths with separators need a small follow-up fix bead so `install tests/fixtures/sample-plugin` resolves locally while bare plugin names still prefer GitHub.
+- Relative local plugin paths with separators now resolve locally while bare plugin names still prefer GitHub.
 
 ## Immediate Follow-Ups
-1. Land the small CLI path-resolution regression bead.
-2. Add the initial OpenClaw relay and Codex PTY bridge skeleton after the Codex-first planning flow is stable.
+1. Add the initial OpenClaw relay and Codex PTY bridge skeleton after the Codex-first planning flow is stable.
+2. Compare the RES Snatcher Codex-first plan against an OpenClaw-driven pass once the bridge exists.
 3. Decide which imported surfaces remain core versus compatibility.
-4. Compare the RES Snatcher Codex-first plan against an OpenClaw-driven pass once the bridge exists.
+4. Decide whether attach/resume support belongs in the first PTY bridge cut or a later bead.
 
 ## Recent Bead Commits
 - `2de3af0b1bfabfa943c648b751ee676cac78dcd2` contains Bead 3, which adds the RES Snatcher scratch planning workspace, official-source research notes, and the feasibility-quality hackathon plan.

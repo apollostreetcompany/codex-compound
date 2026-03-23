@@ -242,6 +242,38 @@ describe("CLI", () => {
     expect(await exists(path.join(tempRoot, "opencode.json"))).toBe(true)
   })
 
+  test("install treats relative paths with separators as local plugin paths", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-relative-path-"))
+    const repoRoot = path.join(import.meta.dir, "..")
+
+    const proc = Bun.spawn([
+      "bun",
+      "run",
+      path.join(repoRoot, "src", "index.ts"),
+      "install",
+      "tests/fixtures/sample-plugin",
+      "--to",
+      "opencode",
+      "--output",
+      tempRoot,
+    ], {
+      cwd: repoRoot,
+      stdout: "pipe",
+      stderr: "pipe",
+    })
+
+    const exitCode = await proc.exited
+    const stdout = await new Response(proc.stdout).text()
+    const stderr = await new Response(proc.stderr).text()
+
+    if (exitCode !== 0) {
+      throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
+    }
+
+    expect(stdout).toContain("Installed compound-engineering")
+    expect(await exists(path.join(tempRoot, "opencode.json"))).toBe(true)
+  })
+
   test("convert writes OpenCode output", async () => {
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-convert-"))
     const fixtureRoot = path.join(import.meta.dir, "fixtures", "sample-plugin")

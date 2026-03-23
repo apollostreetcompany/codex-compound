@@ -2,6 +2,9 @@ import { describe, expect, test } from "bun:test"
 import claudeMarketplace from "../.claude-plugin/marketplace.json"
 import cursorMarketplace from "../.cursor-plugin/marketplace.json"
 import packageJson from "../package.json"
+import codingTutorCursorManifest from "../plugins/coding-tutor/.cursor-plugin/plugin.json"
+import compoundClaudeManifest from "../plugins/compound-engineering/.claude-plugin/plugin.json"
+import compoundCursorManifest from "../plugins/compound-engineering/.cursor-plugin/plugin.json"
 import { DEFAULT_GITHUB_SOURCE, resolveGitHubSource } from "../src/commands/install"
 import { CLI_NAME, main } from "../src/index"
 
@@ -80,5 +83,12 @@ describe("root identity", () => {
 
     expect(cursorMarketplace.name).toBe("codex-compound")
     expect(cursorMarketplace.metadata.description).toBe("Cursor plugin marketplace for Codex-Compound plugins")
+  })
+
+  test("plugin manifests point back to the codex-compound repo", () => {
+    expect(compoundClaudeManifest.repository).toBe("https://github.com/apollostreetcompany/codex-compound")
+    expect(compoundCursorManifest.repository).toBe("https://github.com/apollostreetcompany/codex-compound")
+    expect(codingTutorCursorManifest.homepage).toBe("https://github.com/apollostreetcompany/codex-compound")
+    expect(codingTutorCursorManifest.repository).toBe("https://github.com/apollostreetcompany/codex-compound")
   })
 })

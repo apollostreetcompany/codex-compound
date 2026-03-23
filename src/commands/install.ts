@@ -227,8 +227,16 @@ type ResolvedPluginPath = {
 export const DEFAULT_GITHUB_SOURCE = "https://github.com/apollostreetcompany/codex-compound.git"
 
 async function resolvePluginPath(input: string): Promise<ResolvedPluginPath> {
-  // Only treat as a local path if it explicitly looks like one
-  if (input.startsWith(".") || input.startsWith("/") || input.startsWith("~")) {
+  // Treat explicit or path-like inputs as local paths. Bare names like
+  // "compound-engineering" still resolve from GitHub so same-named local
+  // directories do not shadow the canonical plugin registry source.
+  if (
+    input.startsWith(".") ||
+    input.startsWith("/") ||
+    input.startsWith("~") ||
+    input.includes("/") ||
+    input.includes("\\")
+  ) {
     const expanded = expandHome(input)
     const directPath = path.resolve(expanded)
     if (await pathExists(directPath)) return { path: directPath }
