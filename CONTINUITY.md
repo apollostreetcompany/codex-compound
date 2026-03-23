@@ -36,6 +36,7 @@ Success criteria:
 10. Preserve upstream license and attribution while reshaping the repo.
 11. Initialize `bd` immediately in the repo so `.beads/` is present from the first bead, with sync branch `beads-sync` and recommended hooks installed.
 12. Treat the import/scaffold bead as `Medium` risk because it changes many files and project-operating contracts, then validate it with `bun test`, `bun run release:validate`, and `bd doctor`.
+13. Adopt `codex-compound` as the root package/bin identity and `https://github.com/apollostreetcompany/codex-compound(.git)` as the default repo source while preserving downstream plugin IDs like `compound-engineering`.
 
 ## State
 
@@ -47,12 +48,12 @@ Success criteria:
 - [x] Initialized `.beads/`, created bead `codex-compound-dwe`, installed recommended hooks, and configured sync branch `beads-sync`.
 - [x] Validated the imported baseline with `bun test`, `bun run release:validate`, and `bd doctor`.
 - [x] Completed Bead 0 - import upstream baseline and scaffold Codex-Compound.
+- [x] Completed Bead 1 - rename root package, CLI, repo source, and root metadata surfaces to Codex-Compound.
 
 ### Now
-- Ready for Bead 1 - rename root repo/package/docs surfaces toward Codex-Compound and start the Codex-first rewrite.
+- Ready for Bead 2 - rewrite core `ce:*` workflows for Codex-first continuity, learnings, and bead-aware execution.
 
 ### Next
-- Rename repo/package/docs surfaces from Compound/Claude-first wording toward Codex-first wording.
 - Add first-pass Codex-first instructions for continuity, learnings, and bead-aware `ce:*` workflows.
 - Create a separate scratch test case for RES Snatcher planning.
 - Design the OpenClaw relay/PTY bridge after the Codex-first planning flow is stable.
@@ -78,6 +79,9 @@ Success criteria:
 - `docs/learnings/global/`
 - `package.json`
 - `README.md`
+- `PRIVACY.md`
+- `.claude-plugin/marketplace.json`
+- `.cursor-plugin/marketplace.json`
 - `plugins/compound-engineering/`
 - `src/`
 - `tests/`
