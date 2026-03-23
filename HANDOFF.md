@@ -1,7 +1,7 @@
 # HANDOFF.md - Codex-Compound
 
 ## Current Status
-Bead 1 is implemented and validated locally: the root package, CLI identity, default GitHub source, and root-facing metadata now point at Codex-Compound, while downstream plugin IDs remain unchanged. The next step is Bead 2, the workflow rewrite for Codex-first continuity and beads.
+Bead 2 is implemented and validated locally: the core `ce:*` workflow skills and plugin-level docs now speak in Codex-first terms around `AGENTS.md`, `CONTINUITY.md`, `.beads/`, `handoff/beads.jsonl`, and `docs/learnings/`. The next step is Bead 3, the RES Snatcher scratch project and dogfood planning run.
 
 ## Delivered
 - Imported upstream baseline content into `/Users/borker/dev/codex-compound`.
@@ -23,6 +23,9 @@ Bead 1 is implemented and validated locally: the root package, CLI identity, def
 - Rebranded the root package/bin/docs/marketplace identity to `codex-compound`.
 - Exported the default GitHub install source and override resolution so the new root identity is testable.
 - Added targeted identity coverage in `tests/root-identity.test.ts`.
+- Reworked the core workflow skill docs (`ce:brainstorm`, `ce:plan`, `ce:work`, `ce:review`, `ce:compound`, `ce:ideate`) around Codex-first memory and bead execution.
+- Updated plugin-level docs in `plugins/compound-engineering/AGENTS.md` and `plugins/compound-engineering/README.md` to describe the Codex-first memory primitives.
+- Added workflow contract tests to lock the new behavior in place.
 
 ## Validation Evidence
 - `bun test` -> pass (364 tests)
@@ -33,6 +36,10 @@ Bead 1 is implemented and validated locally: the root package, CLI identity, def
 - `bun test tests/root-identity.test.ts` -> pass
 - `bun test tests/cli.test.ts` -> pass
 - `bun run release:validate` -> pass after the root rename surface changes
+- `bun test tests/compound-workflow-docs.test.ts tests/workflow-skill-contract.test.ts` -> pass
+- `bun test tests/codex-converter.test.ts tests/codex-writer.test.ts` -> pass
+- `bun test` -> pass (375 tests)
+- `bun run release:validate` -> pass after the workflow rewrite
 
 ## Current Defaults
 - Codex owns the session and PTY.
@@ -43,9 +50,9 @@ Bead 1 is implemented and validated locally: the root package, CLI identity, def
 - RES Snatcher planning is the first dogfood acceptance scenario and will run in a separate scratch test case.
 
 ## Immediate Follow-Ups
-1. Rewrite the core `ce:*` workflows around `AGENTS.md`, `CONTINUITY.md`, learnings, and bead-aware execution.
-2. Decide which imported surfaces remain core versus compatibility.
-3. Create the separate scratch test case for the RES Snatcher planning demo.
+1. Create the separate scratch test case for the RES Snatcher planning demo.
+2. Use the rewritten Codex-first planning workflow there and capture feasibility boundaries.
+3. Decide which imported surfaces remain core versus compatibility.
 4. Add the initial OpenClaw relay and Codex PTY bridge skeleton after the Codex-first planning flow is stable.
 
 ## Recent Bead Commits

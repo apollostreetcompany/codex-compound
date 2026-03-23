@@ -37,6 +37,7 @@ Success criteria:
 11. Initialize `bd` immediately in the repo so `.beads/` is present from the first bead, with sync branch `beads-sync` and recommended hooks installed.
 12. Treat the import/scaffold bead as `Medium` risk because it changes many files and project-operating contracts, then validate it with `bun test`, `bun run release:validate`, and `bd doctor`.
 13. Adopt `codex-compound` as the root package/bin identity and `https://github.com/apollostreetcompany/codex-compound(.git)` as the default repo source while preserving downstream plugin IDs like `compound-engineering`.
+14. Make the core `ce:*` workflows Codex-first by explicitly grounding them in `AGENTS.md`, `CONTINUITY.md`, `.beads/`, `handoff/beads.jsonl`, and `docs/learnings/`, while treating `docs/solutions/` as legacy context during migration.
 
 ## State
 
@@ -49,14 +50,15 @@ Success criteria:
 - [x] Validated the imported baseline with `bun test`, `bun run release:validate`, and `bd doctor`.
 - [x] Completed Bead 0 - import upstream baseline and scaffold Codex-Compound.
 - [x] Completed Bead 1 - rename root package, CLI, repo source, and root metadata surfaces to Codex-Compound.
+- [x] Completed Bead 2 - rewrite core workflow skills and plugin docs around Codex-first memory, learnings, and bead execution.
 
 ### Now
-- Ready for Bead 2 - rewrite core `ce:*` workflows for Codex-first continuity, learnings, and bead-aware execution.
+- Ready for Bead 3 - create the RES Snatcher scratch test case and dogfood the Codex-first planning flow.
 
 ### Next
-- Add first-pass Codex-first instructions for continuity, learnings, and bead-aware `ce:*` workflows.
 - Create a separate scratch test case for RES Snatcher planning.
 - Design the OpenClaw relay/PTY bridge after the Codex-first planning flow is stable.
+- Wire the initial OpenClaw relay and Codex PTY bridge skeleton after the dogfood planning path is proven.
 
 ## Open Questions
 - Should all non-Codex/OpenClaw targets remain fully supported long-term, or become compatibility surfaces only? (UNCONFIRMED)
@@ -82,6 +84,8 @@ Success criteria:
 - `PRIVACY.md`
 - `.claude-plugin/marketplace.json`
 - `.cursor-plugin/marketplace.json`
+- `plugins/compound-engineering/AGENTS.md`
+- `plugins/compound-engineering/README.md`
 - `plugins/compound-engineering/`
 - `src/`
 - `tests/`
