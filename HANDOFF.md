@@ -1,7 +1,7 @@
 # HANDOFF.md - Codex-Compound
 
 ## Current Status
-Bead 6 is implemented, committed, and pushed: the OpenClaw converter now normalizes namespaced command registrations and generated command skill directories with the same helper, and the writer test suite now exercises the written `index.ts` runtime path to confirm those commands resolve correctly from disk. All scheduled beads are complete; the next practical step is to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
+Bead 7 is complete: the global Codex home now contains only the `ce-plan` and `ce-brainstorm` prompt/skill pairs for visibility testing, and a clean OpenClaw upload artifact has been generated from converted output only at `/Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip`. All scheduled beads are complete; the next practical step is to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
 
 ## Delivered
 - Imported upstream baseline content into `/Users/borker/dev/codex-compound`.
@@ -37,6 +37,10 @@ Bead 6 is implemented, committed, and pushed: the OpenClaw converter now normali
 - Updated root and plugin docs to describe the ACP-backed OpenClaw -> Codex planning handoff path and its limits.
 - Normalized OpenClaw command skill directories and command registration names through the same converter helper so namespaced commands preserve one runtime lookup key.
 - Added an end-to-end OpenClaw writer/runtime regression that writes a bundle, imports the generated `index.ts`, and verifies a namespaced command returns the expected skill body.
+- Installed only `ce-plan` and `ce-brainstorm` into the global `~/.codex` as prompts plus copied skills, leaving helper skills and agents out of the global surface on purpose.
+- Generated a clean OpenClaw extension bundle under `/Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering` and zipped it as `compound-engineering-openclaw-clean.zip`.
+- Confirmed the upload artifact contains generated extension files only and no repo scaffolding files such as `AGENTS.md`, `CONTINUITY.md`, `HANDOFF.md`, or `MISTAKES.md`.
+- Noted one packaging caveat: `plugins/compound-engineering/skills/frontend-design/SKILL.md` has malformed YAML frontmatter, so the packaging run used a tolerant loader fallback for that one skill instead of the standard strict plugin loader.
 
 ## Validation Evidence
 - `bun test` -> pass (364 tests)
@@ -59,6 +63,13 @@ Bead 6 is implemented, committed, and pushed: the OpenClaw converter now normali
 - `bun test tests/openclaw-converter.test.ts tests/openclaw-writer.test.ts tests/sync-openclaw.test.ts tests/cli.test.ts` -> pass (33 tests)
 - `bun test` -> pass (383 tests)
 - `bun run release:validate` -> pass after the OpenClaw command normalization follow-up
+- minimal Codex global install wrote:
+  - `/Users/borker/.codex/prompts/ce-plan.md`
+  - `/Users/borker/.codex/prompts/ce-brainstorm.md`
+  - `/Users/borker/.codex/skills/ce:plan/SKILL.md`
+  - `/Users/borker/.codex/skills/ce:brainstorm/SKILL.md`
+- `unzip -l /Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip` -> pass; archive contains only generated extension content
+- `find /Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering -maxdepth 2 \\( -name 'AGENTS.md' -o -name 'CONTINUITY.md' -o -name 'HANDOFF.md' -o -name 'MISTAKES.md' \\)` -> no output
 
 ## Current Defaults
 - Codex owns the session and PTY.
@@ -70,6 +81,7 @@ Bead 6 is implemented, committed, and pushed: the OpenClaw converter now normali
 - Relative local plugin paths with separators now resolve locally while bare plugin names still prefer GitHub.
 - The first OpenClaw bridge cut is ACP-first. It assumes `@openclaw/acpx`, Codex CLI on the OpenClaw host, and thread-bound ACP sessions rather than a custom plugin-managed PTY.
 - Generated OpenClaw command identity is canonicalized at conversion time, so namespaced command registrations and `skills/cmd-*` directories cannot drift apart.
+- The current global Codex visibility test intentionally installs only `ce-plan` and `ce-brainstorm`, so using them globally may still reference helper skills that are not installed.
 
 ## Immediate Follow-Ups
 1. Compare the RES Snatcher Codex-first plan against an OpenClaw-driven pass using the new ACP bridge skeleton.
@@ -78,6 +90,7 @@ Bead 6 is implemented, committed, and pushed: the OpenClaw converter now normali
 4. Decide which imported surfaces remain core versus compatibility.
 
 ## Recent Bead Commits
+- pending: Bead 7 will record the global Codex visibility install and the clean OpenClaw upload artifact path.
 - `9ec45ea29e99ebd81ea873fc2875962aa8bc90ca` contains Bead 6, which normalizes OpenClaw command registration and command-skill directory names together and adds a written-bundle runtime regression for namespaced commands.
 - `a1b099ddf6bb15807c2768cb28055d51ae2a3bf3` contains Bead 4, which adds the ACP-backed OpenClaw -> Codex relay skeleton, generated bridge skill, example ACP config, and documentation updates.
 - `84edeb229ddba1940cd93321cc742f1b09fd9481` contains Bead 5, which fixes relative local plugin path resolution and adds compatibility coverage for plugin-manifest repo URLs.
