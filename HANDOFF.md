@@ -72,6 +72,7 @@ Bead 4 is implemented and validated locally: the OpenClaw target now emits an AC
 4. Decide which imported surfaces remain core versus compatibility.
 
 ## Recent Bead Commits
+- `a1b099ddf6bb15807c2768cb28055d51ae2a3bf3` contains Bead 4, which adds the ACP-backed OpenClaw -> Codex relay skeleton, generated bridge skill, example ACP config, and documentation updates.
 - `84edeb229ddba1940cd93321cc742f1b09fd9481` contains Bead 5, which fixes relative local plugin path resolution and adds compatibility coverage for plugin-manifest repo URLs.
 - `2de3af0b1bfabfa943c648b751ee676cac78dcd2` contains Bead 3, which adds the RES Snatcher scratch planning workspace, official-source research notes, and the feasibility-quality hackathon plan.
 - `5745021375474b0f0370c42cba709339834eed49` contains Bead 1, which renames the root package/bin/docs/marketplace identity to Codex-Compound and adds targeted identity coverage.
