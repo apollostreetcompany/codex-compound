@@ -5,6 +5,16 @@ They supplement the repo-root `AGENTS.md`.
 
 # Compounding Engineering Plugin Development
 
+## Codex-First Workflow Memory
+
+When changing the core `ce:*` workflows in this plugin:
+
+- Treat repo-root `AGENTS.md` as the canonical operating contract.
+- Read and update repo-root `CONTINUITY.md` when workflow behavior, handoff rules, or execution sequencing changes.
+- Keep `.beads/` as the backlog graph and `handoff/beads.jsonl` as the per-bead execution record.
+- Prefer `docs/learnings/projects/`, `docs/learnings/project-types/`, and `docs/learnings/global/` over older `docs/solutions/` patterns when writing durable guidance.
+- Mention `CLAUDE.md` only as a compatibility fallback.
+
 ## Versioning Requirements
 
 **IMPORTANT**: Routine PRs should not cut releases for this plugin.

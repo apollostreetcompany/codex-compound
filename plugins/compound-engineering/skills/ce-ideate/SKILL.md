@@ -49,6 +49,12 @@ If no argument is provided, proceed with open-ended ideation.
 
 ### Phase 0: Resume and Scope
 
+## Codex-First Grounding
+
+Before ideation:
+- Read `AGENTS.md` first, then `CONTINUITY.md`, so the ideas fit the current project mission and active state.
+- Use `docs/learnings/` as the primary source of institutional memory. If the repo still keeps `docs/solutions/`, treat it as legacy context only.
+
 #### 0.1 Check for Recent Ideation Work
 
 Look in `docs/ideation/` for ideation documents created within the last 30 days.
@@ -124,7 +130,7 @@ Run agents in parallel in the **foreground** (do not use background dispatch —
 Consolidate all results into a short grounding summary. When issue intelligence is present, keep it as a distinct section so ideation sub-agents can distinguish between code-observed and user-reported signals:
 
 - **Codebase context** — project shape, notable patterns, obvious pain points, likely leverage points
-- **Past learnings** — relevant institutional knowledge from docs/solutions/
+- **Past learnings** — relevant institutional knowledge from `docs/learnings/` (plus legacy `docs/solutions/` only when still needed)
 - **Issue intelligence** (when present) — theme summaries from the issue intelligence agent, preserving theme titles, descriptions, issue counts, and trend directions
 
 Do **not** do external research in v1.

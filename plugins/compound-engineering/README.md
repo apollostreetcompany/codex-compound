@@ -2,6 +2,16 @@
 
 AI-powered development tools that get smarter with every use. Make each unit of engineering work easier than the last.
 
+## Codex-First Memory
+
+This derivative expects the host repo to keep:
+
+- `AGENTS.md` as the canonical operating contract
+- `CONTINUITY.md` as the current-state ledger
+- `.beads/` as the backlog and dependency graph
+- `handoff/beads.jsonl` as the per-bead execution record
+- `docs/learnings/projects/`, `docs/learnings/project-types/`, and `docs/learnings/global/` as the durable learning hierarchy
+
 ## Components
 
 | Component | Count |

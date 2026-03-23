@@ -16,6 +16,14 @@ This command takes a work document (plan, specification, or todo file) and execu
 
 <input_document> #$ARGUMENTS </input_document>
 
+## Codex-First Execution Contract
+
+Before implementation:
+- Read `AGENTS.md`, `CONTINUITY.md`, `MISTAKES.md`, and the selected plan.
+- Use `docs/learnings/` as the primary durable knowledge base. If the repo still has `docs/solutions/`, treat them as legacy supporting context only.
+- Execute **one bead at a time**. `Planning Beads` should be rare and only cover early ambiguity; most progress should happen in `Implementation Beads`.
+- For every completed bead, update `CONTINUITY.md`, append execution evidence to `handoff/beads.jsonl`, and record repeated mistakes in `MISTAKES.md`.
+
 ## Execution Workflow
 
 ### Phase 1: Quick Start
@@ -24,8 +32,9 @@ This command takes a work document (plan, specification, or todo file) and execu
 
    - Read the work document completely
    - Treat the plan as a decision artifact, not an execution script
-   - If the plan includes sections such as `Implementation Units`, `Work Breakdown`, `Requirements Trace`, `Files`, `Test Scenarios`, or `Verification`, use those as the primary source material for execution
-   - Check for `Execution note` on each implementation unit — these carry the plan's execution posture signal for that unit (for example, test-first or characterization-first). Note them when creating tasks.
+   - If the plan includes sections such as `Planning Beads`, `Implementation Beads`, `Implementation Units`, `Work Breakdown`, `Requirements Trace`, `Files`, `Test Scenarios`, or `Verification`, use those as the primary source material for execution
+   - Treat the plan's implementation beads as the default execution units. Planning beads are a special case for unresolved early investigation, not the normal mode.
+   - Check for `Execution note` on each bead or implementation unit — these carry the plan's execution posture signal for that slice of work (for example, test-first or characterization-first). Note them when creating tasks.
    - Check for a `Deferred to Implementation` or `Implementation-Time Unknowns` section — these are questions the planner intentionally left for you to resolve during execution. Note them before starting so they inform your approach rather than surprising you mid-task
    - Check for a `Scope Boundaries` section — these are explicit non-goals. Refer back to them if implementation starts pulling you toward adjacent work
    - Review any references or links provided in the plan
@@ -80,10 +89,10 @@ This command takes a work document (plan, specification, or todo file) and execu
 
 3. **Create Todo List**
    - Use your available task tracking tool (e.g., TodoWrite, task lists) to break the plan into actionable tasks
-   - Derive tasks from the plan's implementation units, dependencies, files, test targets, and verification criteria
-   - Carry each unit's `Execution note` into the task when present
-   - For each unit, read the `Patterns to follow` field before implementing — these point to specific files or conventions to mirror
-   - Use each unit's `Verification` field as the primary "done" signal for that task
+   - Derive tasks from the plan's implementation beads first, then any remaining implementation units, dependencies, files, test targets, and verification criteria
+   - Carry each bead's `Execution note` into the task when present
+   - For each bead, read the `Patterns to follow` field before implementing — these point to specific files or conventions to mirror
+   - Use each bead's `Verification` field as the primary "done" signal for that task
    - Do not expect the plan to contain implementation code, micro-step TDD instructions, or exact shell commands
    - Include dependencies between tasks
    - Prioritize based on what needs to be done first
@@ -164,18 +173,21 @@ This command takes a work document (plan, specification, or todo file) and execu
 
    **Heuristic:** "Can I write a commit message that describes a complete, valuable change? If yes, commit. If the message would be 'WIP' or 'partial X', wait."
 
-   If the plan has Implementation Units, use them as a starting guide for commit boundaries — but adapt based on what you find during implementation. A unit might need multiple commits if it's larger than expected, or small related units might land together. Use each unit's Goal to inform the commit message.
+   If the plan has `Implementation Beads`, use them as the default commit boundaries. If the plan only has implementation units, use them as the starting guide and adapt based on what you find during execution.
 
    **Commit workflow:**
    ```bash
    # 1. Verify tests pass (use project's test command)
    # Examples: bin/rails test, npm test, pytest, go test, etc.
 
-   # 2. Stage only files related to this logical unit (not `git add .`)
-   git add <files related to this logical unit>
+   # 2. Stage only files related to this bead (not `git add .`)
+   git add <files related to this bead>
 
-   # 3. Commit with conventional message
-   git commit -m "feat(scope): description of this unit"
+   # 3. Commit with conventional bead message
+   git commit -m "type(bead-N): description"
+
+   # 4. Push before starting the next bead
+   git push
    ```
 
    **Handling merge conflicts:** If conflicts arise during rebasing or merging, resolve them immediately. Incremental commits make conflict resolution easier since each commit is small and focused.
@@ -187,7 +199,7 @@ This command takes a work document (plan, specification, or todo file) and execu
    - The plan should reference similar code - read those files first
    - Match naming conventions exactly
    - Reuse existing components where possible
-   - Follow project coding standards (see AGENTS.md; use CLAUDE.md only if the repo still keeps a compatibility shim)
+   - Follow project coding standards (see `AGENTS.md` and `CONTINUITY.md`; use `CLAUDE.md` only if the repo still keeps a compatibility shim)
    - When in doubt, grep for similar implementations
 
 4. **Test Continuously**
@@ -219,6 +231,9 @@ This command takes a work document (plan, specification, or todo file) and execu
    - Keep the task list updated as you complete tasks
    - Note any blockers or unexpected discoveries
    - Create new tasks if scope expands
+   - Update `CONTINUITY.md` after each completed bead, not only at the very end
+   - Append bead evidence to `handoff/beads.jsonl` when each bead is complete
+   - Promote durable learnings to `docs/learnings/` when the work reveals patterns worth reusing
    - Keep user informed of major milestones
 
 ### Phase 3: Quality Check

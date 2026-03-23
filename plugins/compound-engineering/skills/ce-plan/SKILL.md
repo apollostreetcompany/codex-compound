@@ -20,6 +20,15 @@ Transform feature descriptions, bug reports, or improvement ideas into well-stru
 
 Do not proceed until you have a clear feature description from the user.
 
+## Codex-First Planning Contract
+
+Before research or planning:
+- Read `AGENTS.md` first, then `CONTINUITY.md`, then `MISTAKES.md`.
+- Use `docs/learnings/projects/`, `docs/learnings/project-types/`, and `docs/learnings/global/` as the primary durable learning sources. If the repo still has `docs/solutions/`, treat them as legacy or historical context only.
+- Plans must distinguish rare `planning beads` from the default `implementation beads`.
+- Each implementation bead should define scope, affected files, acceptance checks, validations, and the expected commit boundary for `/ce:work`.
+- Make the handoff to `/ce:work` explicit: note what must be written back to `CONTINUITY.md`, what evidence belongs in `handoff/beads.jsonl`, and which unknowns remain deferred to execution.
+
 ### 0. Idea Refinement
 
 **Check for requirements document first:**
@@ -88,7 +97,7 @@ Run these agents **in parallel** to gather local context:
 
 **What to look for:**
 - **Repo research:** technology stack and versions (informs research decisions), architectural patterns, and implementation patterns relevant to the feature
-- **Learnings:** documented solutions in `docs/solutions/` that might apply (gotchas, patterns, lessons learned)
+- **Learnings:** durable guidance in `docs/learnings/` that might apply (project, project-type, or global gotchas, patterns, and lessons learned). If the repo still has `docs/solutions/`, scan it only as legacy context.
 
 These findings inform the next step.
 
@@ -122,7 +131,7 @@ Run these agents in parallel:
 After all research steps complete, consolidate findings:
 
 - Document relevant file paths from repo research (e.g., `app/services/example_service.rb:42`)
-- **Include relevant institutional learnings** from `docs/solutions/` (key insights, gotchas to avoid)
+- **Include relevant institutional learnings** from `docs/learnings/projects/`, `docs/learnings/project-types/`, and `docs/learnings/global/` (key insights, gotchas to avoid). Mention legacy `docs/solutions/` only when older guidance still materially informs the plan.
 - Note external documentation URLs and best practices (if external research was done)
 - List related issues or PRs discovered
 - Capture AGENTS.md conventions
@@ -134,6 +143,21 @@ After all research steps complete, consolidate findings:
 <thinking>
 Think like a product manager - what would make this issue clear and actionable? Consider multiple perspectives
 </thinking>
+
+**Bead planning requirements:**
+
+- [ ] Create explicit `planning beads` only when pre-implementation investigation or design decisions still need their own bounded unit of work
+- [ ] Default the plan to `implementation beads` that `/ce:work` can execute one at a time
+- [ ] For each implementation bead, record: goal, files or surfaces, dependencies, verification, and completion evidence
+- [ ] Ensure the plan states what must be updated in `CONTINUITY.md`, `handoff/beads.jsonl`, and `docs/learnings/` during execution
+
+### Planning Beads
+
+Use this heading only when a pre-implementation investigation or decision still needs its own bounded planning unit before coding starts.
+
+### Implementation Beads
+
+Use this heading in every non-trivial plan that will hand off to `/ce:work`. Each implementation bead should define scope, files or surfaces, dependencies, verification, and completion evidence.
 
 **Title & Categorization:**
 

@@ -10,7 +10,12 @@ Coordinate multiple subagents working in parallel to document a recently solved 
 
 ## Purpose
 
-Captures problem solutions while context is fresh, creating structured documentation in `docs/solutions/` with YAML frontmatter for searchability and future reference. Uses parallel subagents for maximum efficiency.
+Captures durable learnings while context is fresh, writing them into the Codex-first hierarchy:
+- `docs/learnings/projects/` for project-specific lessons
+- `docs/learnings/project-types/` for lessons that generalize to a project type such as `ios`, `backend`, or `full-stack`
+- `docs/learnings/global/` for lessons that should compound across all projects
+
+If the repo still has `docs/solutions/`, treat it as legacy reference material rather than the canonical destination. Uses parallel subagents for maximum efficiency.
 
 **Why "compound"?** Each documented solution compounds your team's knowledge. The first time you solve a problem takes research. Document it, and the next occurrence takes minutes. Knowledge compounds.
 
@@ -79,7 +84,7 @@ Launch these subagents IN PARALLEL. Each returns text data to the orchestrator.
    - Returns: Solution content block
 
 #### 3. **Related Docs Finder**
-   - Searches `docs/solutions/` for related documentation
+   - Searches `docs/learnings/` for related documentation and consults `docs/solutions/` only as legacy history when needed
    - Identifies cross-references and links
    - Finds related GitHub issues
    - Flags any related learning or pattern docs that may now be stale, contradicted, or overly broad
@@ -92,8 +97,7 @@ Launch these subagents IN PARALLEL. Each returns text data to the orchestrator.
    - Returns: Prevention/testing content
 
 #### 5. **Category Classifier**
-   - Determines optimal `docs/solutions/` category
-   - Validates category against schema
+   - Determines whether the learning belongs in `docs/learnings/projects/`, `docs/learnings/project-types/`, or `docs/learnings/global/`
    - Suggests filename based on slug
    - Returns: Final path and filename
 
@@ -110,8 +114,11 @@ The orchestrating agent (main conversation) performs these steps:
 1. Collect all text results from Phase 1 subagents
 2. Assemble complete markdown file from the collected pieces
 3. Validate YAML frontmatter against schema
-4. Create directory if needed: `mkdir -p docs/solutions/[category]/`
-5. Write the SINGLE final file: `docs/solutions/[category]/[filename].md`
+4. Create directory if needed under the selected learning scope
+5. Write the SINGLE final file to one of:
+   - `docs/learnings/projects/[project-slug]/[filename].md`
+   - `docs/learnings/project-types/[project-type]/[filename].md`
+   - `docs/learnings/global/[filename].md`
 
 </sequential_tasks>
 
@@ -245,7 +252,10 @@ In compact-safe mode, only suggest `ce:compound-refresh` if there is an obvious 
 
 **Organized documentation:**
 
-- File: `docs/solutions/[category]/[filename].md`
+- File under:
+  - `docs/learnings/projects/[project-slug]/[filename].md`
+  - `docs/learnings/project-types/[project-type]/[filename].md`
+  - `docs/learnings/global/[filename].md`
 
 **Categories auto-detected from problem:**
 

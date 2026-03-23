@@ -21,6 +21,13 @@ argument-hint: "[PR number, GitHub URL, branch name, or latest] [--serial]"
 - For document reviews: Path to a markdown file or document
 </requirements>
 
+## Codex-First Review Grounding
+
+Before review:
+- Read `AGENTS.md` and `CONTINUITY.md` so findings are evaluated against the current project contract and active bead state.
+- Treat `handoff/beads.jsonl`, `HANDOFF.md`, and `MISTAKES.md` as review context when they materially affect the change being reviewed.
+- Use `docs/learnings/` as the primary institutional memory source. If the repo still has `docs/solutions/`, treat them as legacy references only.
+
 ## Main Tasks
 
 ### 1. Determine Review Target & Setup (ALWAYS FIRST)
@@ -55,7 +62,9 @@ The following paths are compound-engineering pipeline artifacts and must never b
 
 - `docs/brainstorms/*-requirements.md` — Requirements documents created by `/ce:brainstorm`. These are the product-definition artifacts that planning depends on.
 - `docs/plans/*.md` — Plan files created by `/ce:plan`. These are living documents that track implementation progress (checkboxes are checked off by `/ce:work`).
-- `docs/solutions/*.md` — Solution documents created during the pipeline.
+- `CONTINUITY.md`, `HANDOFF.md`, `MISTAKES.md`, and `handoff/beads.jsonl` — project memory and bead evidence artifacts that anchor current-state review.
+- `docs/learnings/**` — canonical durable learning artifacts for project, project-type, and global compounding.
+- `docs/solutions/*.md` — legacy learning artifacts that may still exist during migration.
 
 If a review agent flags any file in these directories for cleanup or removal, discard that finding during synthesis. Do not create a todo for it.
 </protected_artifacts>
@@ -111,7 +120,7 @@ For each agent in review_agents:
 
 Always run these last regardless of mode:
 - Task compound-engineering:review:agent-native-reviewer(PR content) - Verify new features are agent-accessible
-- Task compound-engineering:research:learnings-researcher(PR content) - Search docs/solutions/ for past issues related to this PR's modules and patterns
+- Task compound-engineering:research:learnings-researcher(PR content) - Search `docs/learnings/` first, then legacy `docs/solutions/` if needed, for past issues related to this PR's modules and patterns
 
 </parallel_tasks>
 
@@ -253,8 +262,8 @@ Remove duplicates, prioritize by severity and impact.
 <synthesis_tasks>
 
 - [ ] Collect findings from all parallel agents
-- [ ] Surface learnings-researcher results: if past solutions are relevant, flag them as "Known Pattern" with links to docs/solutions/ files
-- [ ] Discard any findings that recommend deleting or gitignoring files in `docs/brainstorms/`, `docs/plans/`, or `docs/solutions/` (see Protected Artifacts above)
+- [ ] Surface learnings-researcher results: if past learnings are relevant, flag them as "Known Pattern" with links to `docs/learnings/` files (or legacy `docs/solutions/` when applicable)
+- [ ] Discard any findings that recommend deleting or gitignoring files in `docs/brainstorms/`, `docs/plans/`, `docs/learnings/`, `CONTINUITY.md`, `HANDOFF.md`, `MISTAKES.md`, or `handoff/beads.jsonl` (see Protected Artifacts above)
 - [ ] Categorize by type: security, performance, architecture, quality, etc.
 - [ ] Assign severity levels: 🔴 CRITICAL (P1), 🟡 IMPORTANT (P2), 🔵 NICE-TO-HAVE (P3)
 - [ ] Remove duplicate or overlapping findings

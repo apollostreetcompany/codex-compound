@@ -34,6 +34,15 @@ This skill does not implement code. It explores, clarifies, and documents decisi
 
 - **Keep outputs concise** - Prefer short sections, brief bullets, and only enough detail to support the next decision.
 
+## Codex-First Grounding
+
+Before substantive brainstorming:
+- Read `AGENTS.md` first for project goals, workflow rules, and constraints.
+- Read `CONTINUITY.md` next so the brainstorm fits the current state instead of inventing a parallel track.
+- Use CLAUDE.md only if retained as compatibility context.
+- Check `docs/learnings/` for relevant project, project-type, or global learnings. If the repo still has `docs/solutions/`, treat them as legacy reference material rather than the canonical learning store.
+- When the brainstorm produces durable decisions, update `CONTINUITY.md` before handing off to `/ce:plan`.
+
 ## Feature Description
 
 <feature_description> #$ARGUMENTS </feature_description>
