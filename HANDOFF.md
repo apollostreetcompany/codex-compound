@@ -43,5 +43,5 @@ Upstream `compound-engineering-plugin` `main` has been copied into a new indepen
 4. Decide which imported surfaces remain core versus compatibility.
 5. Create the separate scratch test case for the RES Snatcher planning demo.
 
-## Latest Commit
-- `1b6ade8323abbcf10a4024877a11c62069036d85` on `codex/feat/bead-0-import-bootstrap`
+## Primary Bead Commit
+- `1b6ade8323abbcf10a4024877a11c62069036d85` contains the imported upstream baseline plus the Codex-Compound scaffold on `codex/feat/bead-0-import-bootstrap`.
