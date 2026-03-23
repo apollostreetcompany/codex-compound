@@ -62,5 +62,6 @@ Bead 3 is implemented and validated locally: the RES Snatcher scratch workspace 
 4. Compare the RES Snatcher Codex-first plan against an OpenClaw-driven pass once the bridge exists.
 
 ## Recent Bead Commits
+- `2de3af0b1bfabfa943c648b751ee676cac78dcd2` contains Bead 3, which adds the RES Snatcher scratch planning workspace, official-source research notes, and the feasibility-quality hackathon plan.
 - `5745021375474b0f0370c42cba709339834eed49` contains Bead 1, which renames the root package/bin/docs/marketplace identity to Codex-Compound and adds targeted identity coverage.
 - `1b6ade8323abbcf10a4024877a11c62069036d85` contains the imported upstream baseline plus the Codex-Compound scaffold on `codex/feat/bead-0-import-bootstrap`.
