@@ -1,7 +1,7 @@
 # HANDOFF.md - Codex-Compound
 
 ## Current Status
-Bead 6 is implemented and validated locally: the OpenClaw converter now normalizes namespaced command registrations and generated command skill directories with the same helper, and the writer test suite now exercises the written `index.ts` runtime path to confirm those commands resolve correctly from disk. All scheduled beads are complete; the next practical step is to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
+Bead 6 is implemented, committed, and pushed: the OpenClaw converter now normalizes namespaced command registrations and generated command skill directories with the same helper, and the writer test suite now exercises the written `index.ts` runtime path to confirm those commands resolve correctly from disk. All scheduled beads are complete; the next practical step is to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
 
 ## Delivered
 - Imported upstream baseline content into `/Users/borker/dev/codex-compound`.
@@ -78,6 +78,7 @@ Bead 6 is implemented and validated locally: the OpenClaw converter now normaliz
 4. Decide which imported surfaces remain core versus compatibility.
 
 ## Recent Bead Commits
+- `9ec45ea29e99ebd81ea873fc2875962aa8bc90ca` contains Bead 6, which normalizes OpenClaw command registration and command-skill directory names together and adds a written-bundle runtime regression for namespaced commands.
 - `a1b099ddf6bb15807c2768cb28055d51ae2a3bf3` contains Bead 4, which adds the ACP-backed OpenClaw -> Codex relay skeleton, generated bridge skill, example ACP config, and documentation updates.
 - `84edeb229ddba1940cd93321cc742f1b09fd9481` contains Bead 5, which fixes relative local plugin path resolution and adds compatibility coverage for plugin-manifest repo URLs.
 - `2de3af0b1bfabfa943c648b751ee676cac78dcd2` contains Bead 3, which adds the RES Snatcher scratch planning workspace, official-source research notes, and the feasibility-quality hackathon plan.
