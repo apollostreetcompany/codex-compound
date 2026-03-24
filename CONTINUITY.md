@@ -45,6 +45,8 @@ Success criteria:
 19. Normalize generated OpenClaw command registration names and command skill directory names with the same helper in the converter so namespaced commands remain loadable after bundle writeout.
 20. For global Codex visibility testing, install only the canonical `ce-plan` and `ce-brainstorm` prompt/skill pairs into `~/.codex`; do not globally install their helper research/review skills until install profiles exist.
 21. Build the uploadable OpenClaw artifact from converted extension output only, not from the repo tree. The current clean package lives under `/Users/borker/Downloads/codex-compound-openclaw-upload/`, and packaging had to tolerate malformed frontmatter in `skills/frontend-design/SKILL.md` by falling back to the directory name instead of failing the whole bundle.
+22. Expand the global Codex prompt/skill surface only with the documentation and plan-deepening workflows the user explicitly requested: `ce:compound`, `ce:compound-refresh`, `deepen-plan`, `deepen-plan-beta`, `document-review`, and `compound-docs`.
+23. Until `plugins/compound-engineering/skills/frontend-design/SKILL.md` is fixed, targeted Codex installs that need strict frontmatter parsing should read only the requested skill directories instead of loading the full plugin tree.
 
 ## State
 
@@ -63,14 +65,17 @@ Success criteria:
 - [x] Completed Bead 5 - fix relative local plugin path resolution and strengthen compatibility coverage for root plugin metadata.
 - [x] Completed Bead 6 - normalize OpenClaw command skill directories so namespaced commands resolve at runtime.
 - [x] Completed Bead 7 - install minimal global Codex workflows and build a clean OpenClaw upload package.
+- [x] Completed Bead 8 - install global documentation and deeper-planning Codex prompts/skills.
 
 ### Now
-- All scheduled beads are complete. `~/.codex` now has global `ce-plan` and `ce-brainstorm` prompts/skills for visibility testing, and a clean OpenClaw upload zip is ready in `/Users/borker/Downloads/codex-compound-openclaw-upload/`.
+- All scheduled beads are complete. `~/.codex` now has global prompts/skills for `ce-plan`, `ce-brainstorm`, `ce:compound`, `ce:compound-refresh`, `deepen-plan`, `deepen-plan-beta`, `document-review`, and `compound-docs`, and a clean OpenClaw upload zip is ready in `/Users/borker/Downloads/codex-compound-openclaw-upload/`.
 
 ### Next
 - Run the OpenClaw-driven planning comparison against the RES Snatcher test case.
+- Decide whether `ce:work` should join the global Codex subset so `deepen-plan` has a fully global follow-through path.
 - Decide whether to add install profiles so global Codex installs can include workflow helpers without pulling in the whole pack.
 - Fix the malformed YAML frontmatter in `plugins/compound-engineering/skills/frontend-design/SKILL.md` so clean packaging can use the standard plugin loader.
+- Decide whether Codex target installs should respect `disable-model-invocation` on skills, not just commands.
 - Decide whether attach-to-existing Codex sessions belongs in the next bridge bead.
 - Decide whether OpenClaw personal command sync should remain a warning path or gain a documented conversion surface.
 
@@ -78,6 +83,7 @@ Success criteria:
 - Should all non-Codex/OpenClaw targets remain fully supported long-term, or become compatibility surfaces only? (UNCONFIRMED)
 - What is the smallest reliable v1 bridge between OpenClaw and a Codex-owned PTY session? (UNCONFIRMED)
 - How much of the imported marketplace/coding-tutor surface should remain once the core Codex-first workflow is stable? (UNCONFIRMED)
+- Should the Codex converter honor `disable-model-invocation` for skills when deciding whether to expose workflow prompt wrappers? (UNCONFIRMED)
 
 ## Working Set
 - `AGENTS.md`

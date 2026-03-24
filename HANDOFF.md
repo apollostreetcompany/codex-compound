@@ -1,7 +1,7 @@
 # HANDOFF.md - Codex-Compound
 
 ## Current Status
-Bead 7 is complete: the global Codex home now contains only the `ce-plan` and `ce-brainstorm` prompt/skill pairs for visibility testing, and a clean OpenClaw upload artifact has been generated from converted output only at `/Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip`. All scheduled beads are complete; the next practical step is to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
+Bead 8 is complete: the global Codex home now contains the requested documentation and deeper-planning prompt/skill pairs in addition to `ce-plan` and `ce-brainstorm`, and the clean OpenClaw upload artifact remains available at `/Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip`. All scheduled beads are complete; the next practical step is to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
 
 ## Delivered
 - Imported upstream baseline content into `/Users/borker/dev/codex-compound`.
@@ -38,9 +38,17 @@ Bead 7 is complete: the global Codex home now contains only the `ce-plan` and `c
 - Normalized OpenClaw command skill directories and command registration names through the same converter helper so namespaced commands preserve one runtime lookup key.
 - Added an end-to-end OpenClaw writer/runtime regression that writes a bundle, imports the generated `index.ts`, and verifies a namespaced command returns the expected skill body.
 - Installed only `ce-plan` and `ce-brainstorm` into the global `~/.codex` as prompts plus copied skills, leaving helper skills and agents out of the global surface on purpose.
+- Installed the requested documentation and deeper-planning workflows into the global `~/.codex` as prompts plus copied skills:
+  - `ce:compound`
+  - `ce:compound-refresh`
+  - `deepen-plan`
+  - `deepen-plan-beta`
+  - `document-review`
+  - `compound-docs`
 - Generated a clean OpenClaw extension bundle under `/Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering` and zipped it as `compound-engineering-openclaw-clean.zip`.
 - Confirmed the upload artifact contains generated extension files only and no repo scaffolding files such as `AGENTS.md`, `CONTINUITY.md`, `HANDOFF.md`, or `MISTAKES.md`.
 - Noted one packaging caveat: `plugins/compound-engineering/skills/frontend-design/SKILL.md` has malformed YAML frontmatter, so the packaging run used a tolerant loader fallback for that one skill instead of the standard strict plugin loader.
+- Noted one global-install caveat: strict plugin loading still fails on the malformed `frontend-design` skill frontmatter, so the Bead 8 install read only the selected skill directories instead of parsing the full plugin tree.
 
 ## Validation Evidence
 - `bun test` -> pass (364 tests)
@@ -68,6 +76,21 @@ Bead 7 is complete: the global Codex home now contains only the `ce-plan` and `c
   - `/Users/borker/.codex/prompts/ce-brainstorm.md`
   - `/Users/borker/.codex/skills/ce:plan/SKILL.md`
   - `/Users/borker/.codex/skills/ce:brainstorm/SKILL.md`
+- expanded Codex global install wrote:
+  - `/Users/borker/.codex/prompts/ce-compound.md`
+  - `/Users/borker/.codex/prompts/ce-compound-refresh.md`
+  - `/Users/borker/.codex/prompts/deepen-plan.md`
+  - `/Users/borker/.codex/prompts/deepen-plan-beta.md`
+  - `/Users/borker/.codex/prompts/document-review.md`
+  - `/Users/borker/.codex/prompts/compound-docs.md`
+  - `/Users/borker/.codex/skills/ce:compound/SKILL.md`
+  - `/Users/borker/.codex/skills/ce:compound-refresh/SKILL.md`
+  - `/Users/borker/.codex/skills/deepen-plan/SKILL.md`
+  - `/Users/borker/.codex/skills/deepen-plan-beta/SKILL.md`
+  - `/Users/borker/.codex/skills/document-review/SKILL.md`
+  - `/Users/borker/.codex/skills/compound-docs/SKILL.md`
+- `sed -n '1,40p' /Users/borker/.codex/prompts/ce-compound.md /Users/borker/.codex/prompts/deepen-plan.md /Users/borker/.codex/prompts/document-review.md /Users/borker/.codex/prompts/compound-docs.md` -> pass; wrappers point at the expected skills
+- `rg -n "/prompts:|/ce:|/deepen-plan|/compound-docs|/ce:compound-refresh" /Users/borker/.codex/skills/ce:compound/SKILL.md` -> pass; copied skill references are rewritten toward installed prompt names where targets exist
 - `unzip -l /Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip` -> pass; archive contains only generated extension content
 - `find /Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering -maxdepth 2 \\( -name 'AGENTS.md' -o -name 'CONTINUITY.md' -o -name 'HANDOFF.md' -o -name 'MISTAKES.md' \\)` -> no output
 
@@ -82,12 +105,16 @@ Bead 7 is complete: the global Codex home now contains only the `ce-plan` and `c
 - The first OpenClaw bridge cut is ACP-first. It assumes `@openclaw/acpx`, Codex CLI on the OpenClaw host, and thread-bound ACP sessions rather than a custom plugin-managed PTY.
 - Generated OpenClaw command identity is canonicalized at conversion time, so namespaced command registrations and `skills/cmd-*` directories cannot drift apart.
 - The current global Codex visibility test intentionally installs only `ce-plan` and `ce-brainstorm`, so using them globally may still reference helper skills that are not installed.
+- The current global Codex subset now includes documentation and plan-deepening helpers, but `ce:work` is still not installed globally, so `deepen-plan` may still point to `/ce:work` as a next step rather than an installed `/prompts:ce-work`.
 
 ## Immediate Follow-Ups
 1. Compare the RES Snatcher Codex-first plan against an OpenClaw-driven pass using the new ACP bridge skeleton.
-2. Decide whether attach/resume support belongs in the next bridge bead.
-3. Decide whether OpenClaw personal command sync remains a warning path or gains a documented conversion surface.
-4. Decide which imported surfaces remain core versus compatibility.
+2. Decide whether `ce:work` belongs in the global Codex subset alongside `deepen-plan`.
+3. Fix `plugins/compound-engineering/skills/frontend-design/SKILL.md` so targeted installs and packaging no longer need a special loader path.
+4. Decide whether Codex target installs should respect `disable-model-invocation` for skills.
+5. Decide whether attach/resume support belongs in the next bridge bead.
+6. Decide whether OpenClaw personal command sync remains a warning path or gains a documented conversion surface.
+7. Decide which imported surfaces remain core versus compatibility.
 
 ## Recent Bead Commits
 - `5504f975a02a58d50a241624e3d3ddc0fce3ddd7` contains Bead 7, which records the minimal global Codex visibility install and the clean OpenClaw upload artifact path and caveats.
