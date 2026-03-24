@@ -117,6 +117,7 @@ Bead 8 is complete: the global Codex home now contains the requested documentati
 7. Decide which imported surfaces remain core versus compatibility.
 
 ## Recent Bead Commits
+- `41902bff49e6316a021a90fe2fda9fbee0d4b8b9` contains Bead 8, which records the expanded global Codex prompt/skill surface for documentation and deeper-planning workflows plus the targeted-installer caveat around the malformed `frontend-design` skill frontmatter.
 - `5504f975a02a58d50a241624e3d3ddc0fce3ddd7` contains Bead 7, which records the minimal global Codex visibility install and the clean OpenClaw upload artifact path and caveats.
 - `9ec45ea29e99ebd81ea873fc2875962aa8bc90ca` contains Bead 6, which normalizes OpenClaw command registration and command-skill directory names together and adds a written-bundle runtime regression for namespaced commands.
 - `a1b099ddf6bb15807c2768cb28055d51ae2a3bf3` contains Bead 4, which adds the ACP-backed OpenClaw -> Codex relay skeleton, generated bridge skill, example ACP config, and documentation updates.
