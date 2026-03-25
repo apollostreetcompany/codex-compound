@@ -148,7 +148,7 @@ Bead 10 is complete: the repo now includes a reusable Codex bootstrap script at 
 
 ## Recent Bead Commits
 - `debcedb1aaff51b4ddc04ca8968b7cdca9f9e7f4` contains the Bead 9 implementation, which ports the full Codex prompt and skill surface, adds explicit `#$ARGUMENTS` prompt wrappers, recipe-guided helper skill recommendations, portable ask-user normalization, tolerant skill loading, and the repaired `frontend-design` frontmatter.
-- `UNRECORDED` will become the Bead 10 implementation commit, which adds the reusable Codex bootstrap script, `make bootstrap-codex`, README usage docs, and an end-to-end bootstrap integration test.
+- `77a0a37ec2b9b38d60ac60ce01cda0f308d327fb` contains the Bead 10 implementation, which adds the reusable Codex bootstrap script, `make bootstrap-codex`, README usage docs, and an end-to-end bootstrap integration test.
 - `41902bff49e6316a021a90fe2fda9fbee0d4b8b9` contains Bead 8, which records the expanded global Codex prompt/skill surface for documentation and deeper-planning workflows plus the targeted-installer caveat around the malformed `frontend-design` skill frontmatter.
 - `5504f975a02a58d50a241624e3d3ddc0fce3ddd7` contains Bead 7, which records the minimal global Codex visibility install and the clean OpenClaw upload artifact path and caveats.
 - `9ec45ea29e99ebd81ea873fc2875962aa8bc90ca` contains Bead 6, which normalizes OpenClaw command registration and command-skill directory names together and adds a written-bundle runtime regression for namespaced commands.
