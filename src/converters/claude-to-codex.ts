@@ -84,11 +84,12 @@ export function convertClaudeToCodex(
     const commandSkill = convertCommandSkill(command, usedSkillNames, invocationTargets)
     commandSkills.push(commandSkill)
     const content = renderPrompt(command, commandSkill.name, invocationTargets)
-    return { name: promptName, content }
+    return { name: promptName, content, skillName: commandSkill.name }
   })
   const workflowPrompts = directPromptSkills.map((skill) => ({
     name: workflowPromptNames.get(skill.name)!,
     content: renderWorkflowPrompt(skill, compoundRecipes),
+    skillName: skill.name,
   }))
 
   const agentSkills = plugin.agents.map((agent) =>
@@ -164,7 +165,10 @@ function renderPrompt(
     description: command.description,
     "argument-hint": command.argumentHint,
   }
-  const instructions = `Use the $${skillName} skill for this command and follow its instructions.`
+  const instructions = [
+    `Use the ${skillName} skill for this command and follow its instructions.`,
+    "If that skill is not available in the current skill list, read and follow the installed skill file at __CODEX_SKILL_PATH__ instead.",
+  ].join("\n")
   const transformedBody = transformContentForCodex(command.body, invocationTargets)
   const body = [
     instructions,
@@ -185,6 +189,7 @@ function renderWorkflowPrompt(
   const recipeGuidance = formatCompoundEngineeringRecipeGuidance(skill.name, recipes)
   const body = [
     `Use the ${skill.name} skill for this workflow and follow its instructions exactly.`,
+    "If that skill is not available in the current skill list, read and follow the installed skill file at __CODEX_SKILL_PATH__ instead.",
     renderPromptInputSection("workflow"),
     recipeGuidance,
   ].filter(Boolean).join("\n\n")
@@ -196,7 +201,7 @@ function renderPromptInputSection(kind: "command" | "workflow"): string {
   return [
     `## ${kind === "command" ? "Command" : "Workflow"} Input`,
     `<${label}>`,
-    "#$ARGUMENTS",
+    "$ARGUMENTS",
     `</${label}>`,
     "",
     `If the ${kind} input above is present, treat it as the context to pass through.`,

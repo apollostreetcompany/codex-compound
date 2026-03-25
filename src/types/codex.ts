@@ -4,6 +4,7 @@ import type { CodexInvocationTargets } from "../utils/codex-content"
 export type CodexPrompt = {
   name: string
   content: string
+  skillName?: string
 }
 
 export type CodexSkillDir = {

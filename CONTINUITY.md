@@ -54,6 +54,7 @@ Success criteria:
 28. Codex content transforms should normalize AskUserQuestion-only skill text into portable question-tool guidance that explicitly mentions `request_user_input` for Codex, and Codex sync should always preserve the managed AGENTS compatibility block.
 29. Full plugin loading must tolerate malformed skill frontmatter by falling back to directory metadata, but the source `frontend-design` skill frontmatter is also fixed so the standard full-pack Codex install path works again.
 30. A reusable bootstrap path now ships in-repo as `scripts/bootstrap-codex-compound.sh`: it reuses an existing checkout when present, otherwise clones/updates `codex-compound` into a stable local directory, then installs the full `compound-engineering` pack into `~/.codex` via the existing Codex convert flow. `make bootstrap-codex` is the local entrypoint, and the script supports `CODEX_HOME`, `CODEX_COMPOUND_ROOT`, `CODEX_COMPOUND_DIR`, `CODEX_COMPOUND_REF`, and `SKIP_BUN_INSTALL`.
+31. Codex prompt wrappers must not rely solely on the live available-skill registry. Generated prompts now use plain `$ARGUMENTS` and include a direct fallback to the installed `SKILL.md` path under `~/.codex/skills/...`, so the wrapper still works even when Codex has not refreshed the skill list for the current session.
 
 ## State
 
@@ -75,9 +76,10 @@ Success criteria:
 - [x] Completed Bead 8 - install global documentation and deeper-planning Codex prompts/skills.
 - [x] Completed Bead 9 - port the full Codex global workflow pack with explicit prompt arguments, recipe guidance, portable ask-user behavior, and full `~/.codex` install coverage.
 - [x] Completed Bead 10 - add a reusable Codex bootstrap script and local `make` entrypoint.
+- [x] Completed Bead 11 - make Codex prompts robust when the live skill registry lags.
 
 ### Now
-- All scheduled beads are complete. `~/.codex` now has the full `compound-engineering` skill set plus direct prompt entrypoints for the `ce:*` workflows and selected utilities (`deepen-plan`, `document-review`, `compound-docs`, `setup`, `lfg`, `test-browser`, `test-xcode`, and others), those wrappers use explicit `#$ARGUMENTS` plus recipe guidance from `compound-engineering.recipes.yaml`, and the repo now ships a reusable bootstrap script at `scripts/bootstrap-codex-compound.sh` plus `make bootstrap-codex` for recreating the same install on another machine.
+- All scheduled beads are complete. `~/.codex` now has the full `compound-engineering` skill set plus direct prompt entrypoints for the `ce:*` workflows and selected utilities (`deepen-plan`, `document-review`, `compound-docs`, `setup`, `lfg`, `test-browser`, `test-xcode`, and others), those wrappers use plain `$ARGUMENTS`, direct installed-skill-file fallbacks, recipe guidance from `compound-engineering.recipes.yaml`, and the repo ships a reusable bootstrap script at `scripts/bootstrap-codex-compound.sh` plus `make bootstrap-codex` for recreating the same install on another machine.
 
 ### Next
 - Run the OpenClaw-driven planning comparison against the RES Snatcher test case.
@@ -86,6 +88,7 @@ Success criteria:
 - Decide whether attach-to-existing Codex sessions belongs in the next bridge bead.
 - Decide whether OpenClaw personal command sync should remain a warning path or gain a documented conversion surface.
 - Decide whether the bootstrap script should become the documented cross-machine install recommendation in npm/published package form, or remain a repo-level convenience path.
+- Decide whether direct installed-skill-file fallbacks should remain the Codex default long-term, or whether a future prompt format can reference installed skills more natively without relying on the current registry timing.
 
 ## Open Questions
 - Should all non-Codex/OpenClaw targets remain fully supported long-term, or become compatibility surfaces only? (UNCONFIRMED)

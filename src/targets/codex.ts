@@ -11,7 +11,8 @@ export async function writeCodexBundle(outputRoot: string, bundle: CodexBundle):
   if (bundle.prompts.length > 0) {
     const promptsDir = path.join(codexRoot, "prompts")
     for (const prompt of bundle.prompts) {
-      await writeText(path.join(promptsDir, `${prompt.name}.md`), prompt.content + "\n")
+      const promptContent = renderPromptForOutput(prompt.content, codexRoot, prompt.skillName)
+      await writeText(path.join(promptsDir, `${prompt.name}.md`), promptContent + "\n")
     }
   }
 
@@ -48,6 +49,11 @@ export async function writeCodexBundle(outputRoot: string, bundle: CodexBundle):
 
 function resolveCodexRoot(outputRoot: string): string {
   return path.basename(outputRoot) === ".codex" ? outputRoot : path.join(outputRoot, ".codex")
+}
+
+function renderPromptForOutput(content: string, codexRoot: string, skillName?: string): string {
+  if (!skillName) return content
+  return content.replaceAll("__CODEX_SKILL_PATH__", path.join(codexRoot, "skills", skillName, "SKILL.md"))
 }
 
 export function renderCodexConfig(mcpServers?: Record<string, ClaudeMcpServer>): string | null {

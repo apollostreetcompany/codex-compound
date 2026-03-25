@@ -1,7 +1,7 @@
 # HANDOFF.md - Codex-Compound
 
 ## Current Status
-Bead 10 is complete: the repo now includes a reusable Codex bootstrap script at `/Users/borker/dev/codex-compound/scripts/bootstrap-codex-compound.sh` plus a `make bootstrap-codex` entrypoint. The script reuses an existing checkout when available, otherwise clones or updates `codex-compound` into a stable local directory, then installs the full `compound-engineering` prompt/skill pack into `~/.codex` using the same convert flow validated in Bead 9. The clean OpenClaw upload artifact remains available at `/Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip`. The next practical step is still to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
+Bead 11 is complete: Codex prompt wrappers now survive stale skill-registry state. They no longer emit the literal `#` artifact on empty input, and they now include a direct fallback to the installed `SKILL.md` path under `/Users/borker/.codex/skills/...` so prompts like `/prompts:ce-compound` and `/prompts:ce-plan` can still work even if the live available-skill list has not refreshed yet. The clean OpenClaw upload artifact remains available at `/Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip`. The next practical step is still to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
 
 ## Delivered
 - Imported upstream baseline content into `/Users/borker/dev/codex-compound`.
@@ -68,6 +68,11 @@ Bead 10 is complete: the repo now includes a reusable Codex bootstrap script at 
   - installs the full `compound-engineering` bundle into the requested Codex home with `bun run src/index.ts convert ./plugins/compound-engineering --to codex --codex-home ...`
 - Added `make bootstrap-codex` as the local convenience entrypoint for the same script.
 - Documented the bootstrap flow in `README.md`, including current-checkout usage, a GitHub raw-script invocation example, and the supported environment overrides.
+- Updated Codex prompt generation so:
+  - prompt wrappers use plain `$ARGUMENTS` instead of `#$ARGUMENTS`
+  - prompt wrappers include a fallback to the installed skill file under the current Codex home when the live skill list does not contain the named skill
+  - the writer resolves that fallback to the actual on-disk path when prompts are installed
+- Reinstalled the global Codex prompt surface into `/Users/borker/.codex`, so `/Users/borker/.codex/prompts/ce-compound.md` and `/Users/borker/.codex/prompts/ce-plan.md` now point directly at their installed `SKILL.md` files.
 
 ## Validation Evidence
 - `bun test` -> pass (364 tests)
@@ -117,9 +122,14 @@ Bead 10 is complete: the repo now includes a reusable Codex bootstrap script at 
 - `sed -n '1,80p' /Users/borker/.codex/prompts/ce-plan.md /Users/borker/.codex/prompts/deepen-plan.md /Users/borker/.codex/prompts/lfg.md` -> pass; wrappers now contain explicit `#$ARGUMENTS` sections and recipe guidance where configured
 - `rg -n "request_user_input|compound-engineering\\.recipes\\.yaml|rp-investigate|AskUserQuestion" /Users/borker/.codex/skills/ce:plan/SKILL.md /Users/borker/.codex/skills/deepen-plan/SKILL.md /Users/borker/.codex/skills/setup/SKILL.md` -> pass; installed skills now mention `request_user_input` and preserve already-compliant cross-platform guidance
 - `bun test tests/bootstrap-script.test.ts` -> pass
+- `bun test tests/codex-converter.test.ts tests/codex-writer.test.ts tests/cli.test.ts` -> pass (37 tests)
 - `bun test` -> pass (390 tests)
+- `bun test` -> pass (391 tests) after the prompt-registry fallback fix
 - `bun run release:validate` -> pass after adding the bootstrap script
+- `bun run release:validate` -> pass after the prompt-registry fallback fix
 - `git diff --check` -> pass
+- `bun run src/index.ts convert ./plugins/compound-engineering --to codex --codex-home ~/.codex` -> pass after the prompt-registry fallback fix
+- `sed -n '1,80p' /Users/borker/.codex/prompts/ce-compound.md /Users/borker/.codex/prompts/ce-plan.md` -> pass; installed prompts now use plain `$ARGUMENTS` and point at absolute installed skill-file paths
 - `unzip -l /Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip` -> pass; archive contains only generated extension content
 - `find /Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering -maxdepth 2 \\( -name 'AGENTS.md' -o -name 'CONTINUITY.md' -o -name 'HANDOFF.md' -o -name 'MISTAKES.md' \\)` -> no output
 
@@ -135,6 +145,7 @@ Bead 10 is complete: the repo now includes a reusable Codex bootstrap script at 
 - Generated OpenClaw command identity is canonicalized at conversion time, so namespaced command registrations and `skills/cmd-*` directories cannot drift apart.
 - The Codex install path in this repo writes user-facing prompts and skills only under `~/.codex/prompts` and `~/.codex/skills`.
 - The supported cross-machine Codex reinstall path is now `scripts/bootstrap-codex-compound.sh` or `make bootstrap-codex`; the script can either reuse a checkout or manage its own clone/update path before reinstalling into `~/.codex`.
+- Codex prompt wrappers now treat the installed `SKILL.md` file path as the reliable fallback execution surface when the current session's available-skill list does not yet expose the installed workflow skill.
 - RepoPrompt is the mandatory helper baseline in `compound-engineering.recipes.yaml`. External vetted-library entries (`prompt-cache-maximizer`, `swiftui-pro`, `skill-audit`) are recommendations only, not auto-installed surfaces.
 
 ## Immediate Follow-Ups
@@ -145,6 +156,7 @@ Bead 10 is complete: the repo now includes a reusable Codex bootstrap script at 
 5. Decide whether OpenClaw personal command sync remains a warning path or gains a documented conversion surface.
 6. Decide which imported surfaces remain core versus compatibility.
 7. Decide whether the bootstrap script should stay repo-level or become the primary published install surface for Codex-Compound.
+8. Decide whether the installed-skill-file fallback should remain a permanent Codex prompt contract or be replaced if Codex gains a stable native installed-skill reference model.
 
 ## Recent Bead Commits
 - `debcedb1aaff51b4ddc04ca8968b7cdca9f9e7f4` contains the Bead 9 implementation, which ports the full Codex prompt and skill surface, adds explicit `#$ARGUMENTS` prompt wrappers, recipe-guided helper skill recommendations, portable ask-user normalization, tolerant skill loading, and the repaired `frontend-design` frontmatter.

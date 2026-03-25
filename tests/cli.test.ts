@@ -388,8 +388,10 @@ describe("CLI", () => {
     expect(await exists(path.join(codexRoot, "AGENTS.md"))).toBe(true)
 
     const cePlanPrompt = await fs.readFile(path.join(codexRoot, "prompts", "ce-plan.md"), "utf8")
-    expect(cePlanPrompt).toContain("#$ARGUMENTS")
+    expect(cePlanPrompt).toContain("$ARGUMENTS")
+    expect(cePlanPrompt).not.toContain("#$ARGUMENTS")
     expect(cePlanPrompt).toContain("If the workflow input above is empty")
+    expect(cePlanPrompt).toContain(path.join(codexRoot, "skills", "ce:plan", "SKILL.md"))
     expect(cePlanPrompt).toContain("compound-engineering.recipes.yaml")
     expect(cePlanPrompt).toContain("rp-investigate")
   })

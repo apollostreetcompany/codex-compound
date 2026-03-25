@@ -57,10 +57,12 @@ describe("convertClaudeToCodex", () => {
     const parsedPrompt = parseFrontmatter(prompt.content)
     expect(parsedPrompt.data.description).toBe("Planning command")
     expect(parsedPrompt.data["argument-hint"]).toBe("[FOCUS]")
-    expect(parsedPrompt.body).toContain("$workflows-plan")
+    expect(parsedPrompt.body).toContain("Use the workflows-plan skill")
     expect(parsedPrompt.body).toContain("<command_input>")
-    expect(parsedPrompt.body).toContain("#$ARGUMENTS")
+    expect(parsedPrompt.body).toContain("$ARGUMENTS")
+    expect(parsedPrompt.body).not.toContain("#$ARGUMENTS")
     expect(parsedPrompt.body).toContain("If the command input above is empty")
+    expect(parsedPrompt.body).toContain("If that skill is not available in the current skill list")
     expect(parsedPrompt.body).toContain("Plan the work.")
 
     expect(bundle.skillDirs[0]?.name).toBe("existing-skill")
@@ -120,8 +122,10 @@ describe("convertClaudeToCodex", () => {
     expect(parsedPrompt.data["argument-hint"]).toBe("[feature]")
     expect(parsedPrompt.body).toContain("Use the ce:plan skill")
     expect(parsedPrompt.body).toContain("<workflow_input>")
-    expect(parsedPrompt.body).toContain("#$ARGUMENTS")
+    expect(parsedPrompt.body).toContain("$ARGUMENTS")
+    expect(parsedPrompt.body).not.toContain("#$ARGUMENTS")
     expect(parsedPrompt.body).toContain("If the workflow input above is empty")
+    expect(parsedPrompt.body).toContain("If that skill is not available in the current skill list")
     expect(parsedPrompt.body).toContain("compound-engineering.recipes.yaml")
     expect(parsedPrompt.body).toContain("rp-investigate")
 
@@ -202,7 +206,8 @@ describe("convertClaudeToCodex", () => {
       bundle.prompts.find((prompt) => prompt.name === "document-review")!.content,
     )
     expect(documentReviewPrompt.body).toContain("Use the document-review skill")
-    expect(documentReviewPrompt.body).toContain("#$ARGUMENTS")
+    expect(documentReviewPrompt.body).toContain("$ARGUMENTS")
+    expect(documentReviewPrompt.body).not.toContain("#$ARGUMENTS")
   })
 
   test("does not apply compound workflow canonicalization to other plugins", () => {

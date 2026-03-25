@@ -74,6 +74,44 @@ describe("writeCodexBundle", () => {
     expect(await exists(path.join(codexRoot, "skills", "skill-one", "SKILL.md"))).toBe(true)
   })
 
+  test("writes prompt wrappers with installed skill fallback paths", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-prompt-fallback-"))
+    const codexRoot = path.join(tempRoot, ".codex")
+    const bundle: CodexBundle = {
+      prompts: [
+        {
+          name: "ce-compound",
+          skillName: "ce:compound",
+          content: `---
+description: Test prompt
+---
+
+Use the ce:compound skill for this workflow.
+If that skill is not available in the current skill list, read and follow the installed skill file at __CODEX_SKILL_PATH__ instead.
+
+## Workflow Input
+<workflow_input>
+$ARGUMENTS
+</workflow_input>
+`,
+        },
+      ],
+      skillDirs: [
+        {
+          name: "ce:compound",
+          sourceDir: path.join(import.meta.dir, "fixtures", "sample-plugin", "skills", "skill-one"),
+        },
+      ],
+      generatedSkills: [],
+    }
+
+    await writeCodexBundle(codexRoot, bundle)
+
+    const prompt = await fs.readFile(path.join(codexRoot, "prompts", "ce-compound.md"), "utf8")
+    expect(prompt).toContain(path.join(codexRoot, "skills", "ce:compound", "SKILL.md"))
+    expect(prompt).not.toContain("__CODEX_SKILL_PATH__")
+  })
+
   test("backs up existing config.toml before overwriting", async () => {
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-backup-"))
     const codexRoot = path.join(tempRoot, ".codex")
