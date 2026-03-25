@@ -47,6 +47,12 @@ Success criteria:
 21. Build the uploadable OpenClaw artifact from converted extension output only, not from the repo tree. The current clean package lives under `/Users/borker/Downloads/codex-compound-openclaw-upload/`, and packaging had to tolerate malformed frontmatter in `skills/frontend-design/SKILL.md` by falling back to the directory name instead of failing the whole bundle.
 22. Expand the global Codex prompt/skill surface only with the documentation and plan-deepening workflows the user explicitly requested: `ce:compound`, `ce:compound-refresh`, `deepen-plan`, `deepen-plan-beta`, `document-review`, and `compound-docs`.
 23. Until `plugins/compound-engineering/skills/frontend-design/SKILL.md` is fixed, targeted Codex installs that need strict frontmatter parsing should read only the requested skill directories instead of loading the full plugin tree.
+24. Keep Codex installs on `~/.codex/prompts` and `~/.codex/skills` only in this repo; do not write to `.agents/skills` in this pass.
+25. The full Codex prompt surface for `compound-engineering` should include all `ce:*` workflows plus documented direct utility entrypoints with backing skill sources, while `/sync` remains excluded because the plugin still has no backing source for it.
+26. Codex prompt wrappers must bind inline input explicitly with `#$ARGUMENTS`, tell Codex to ask and wait when required input is missing, and stop relying on prose-only pass-through.
+27. `compound-engineering.recipes.yaml` is now the repo-local helper-skill recipe file. RepoPrompt is the mandatory baseline in v1; external catalog entries from `/Users/borker/dev/skill-library-vetted` remain conditional recommendations only (`prompt-cache-maximizer`, `swiftui-pro`, `skill-audit`, plus reference-only packs).
+28. Codex content transforms should normalize AskUserQuestion-only skill text into portable question-tool guidance that explicitly mentions `request_user_input` for Codex, and Codex sync should always preserve the managed AGENTS compatibility block.
+29. Full plugin loading must tolerate malformed skill frontmatter by falling back to directory metadata, but the source `frontend-design` skill frontmatter is also fixed so the standard full-pack Codex install path works again.
 
 ## State
 
@@ -66,15 +72,14 @@ Success criteria:
 - [x] Completed Bead 6 - normalize OpenClaw command skill directories so namespaced commands resolve at runtime.
 - [x] Completed Bead 7 - install minimal global Codex workflows and build a clean OpenClaw upload package.
 - [x] Completed Bead 8 - install global documentation and deeper-planning Codex prompts/skills.
+- [x] Completed Bead 9 - port the full Codex global workflow pack with explicit prompt arguments, recipe guidance, portable ask-user behavior, and full `~/.codex` install coverage.
 
 ### Now
-- All scheduled beads are complete. `~/.codex` now has global prompts/skills for `ce-plan`, `ce-brainstorm`, `ce:compound`, `ce:compound-refresh`, `deepen-plan`, `deepen-plan-beta`, `document-review`, and `compound-docs`, and a clean OpenClaw upload zip is ready in `/Users/borker/Downloads/codex-compound-openclaw-upload/`.
+- All scheduled beads are complete. `~/.codex` now has the full `compound-engineering` skill set plus direct prompt entrypoints for the `ce:*` workflows and selected utilities (`deepen-plan`, `document-review`, `compound-docs`, `setup`, `lfg`, `test-browser`, `test-xcode`, and others), and those wrappers now use explicit `#$ARGUMENTS` plus recipe guidance from `compound-engineering.recipes.yaml`.
 
 ### Next
 - Run the OpenClaw-driven planning comparison against the RES Snatcher test case.
-- Decide whether `ce:work` should join the global Codex subset so `deepen-plan` has a fully global follow-through path.
 - Decide whether to add install profiles so global Codex installs can include workflow helpers without pulling in the whole pack.
-- Fix the malformed YAML frontmatter in `plugins/compound-engineering/skills/frontend-design/SKILL.md` so clean packaging can use the standard plugin loader.
 - Decide whether Codex target installs should respect `disable-model-invocation` on skills, not just commands.
 - Decide whether attach-to-existing Codex sessions belongs in the next bridge bead.
 - Decide whether OpenClaw personal command sync should remain a warning path or gain a documented conversion surface.
@@ -101,6 +106,7 @@ Success criteria:
 - `docs/learnings/global/`
 - `package.json`
 - `README.md`
+- `compound-engineering.recipes.yaml`
 - `PRIVACY.md`
 - `.claude-plugin/marketplace.json`
 - `.cursor-plugin/marketplace.json`
@@ -108,6 +114,8 @@ Success criteria:
 - `plugins/compound-engineering/README.md`
 - `plugins/compound-engineering/`
 - `src/converters/claude-to-openclaw.ts`
+- `src/converters/claude-to-codex.ts`
+- `src/recipes/compound-engineering.ts`
 - `src/targets/openclaw.ts`
 - `src/types/openclaw.ts`
 - `test-case/res-snatcher/`
