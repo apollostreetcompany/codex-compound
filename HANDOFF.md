@@ -159,6 +159,7 @@ Bead 11 is complete: Codex prompt wrappers now survive stale skill-registry stat
 8. Decide whether the installed-skill-file fallback should remain a permanent Codex prompt contract or be replaced if Codex gains a stable native installed-skill reference model.
 
 ## Recent Bead Commits
+- `b31791aa94587483a05948b1d38ef9156a063a39` contains the Bead 11 implementation, which removes the literal `#` artifact from empty Codex prompt input, adds installed-skill-file fallbacks to prompt wrappers, updates the writer to resolve those paths at install time, and reinstalls the fixed prompt surface into `~/.codex`.
 - `debcedb1aaff51b4ddc04ca8968b7cdca9f9e7f4` contains the Bead 9 implementation, which ports the full Codex prompt and skill surface, adds explicit `#$ARGUMENTS` prompt wrappers, recipe-guided helper skill recommendations, portable ask-user normalization, tolerant skill loading, and the repaired `frontend-design` frontmatter.
 - `77a0a37ec2b9b38d60ac60ce01cda0f308d327fb` contains the Bead 10 implementation, which adds the reusable Codex bootstrap script, `make bootstrap-codex`, README usage docs, and an end-to-end bootstrap integration test.
 - `41902bff49e6316a021a90fe2fda9fbee0d4b8b9` contains Bead 8, which records the expanded global Codex prompt/skill surface for documentation and deeper-planning workflows plus the targeted-installer caveat around the malformed `frontend-design` skill frontmatter.
