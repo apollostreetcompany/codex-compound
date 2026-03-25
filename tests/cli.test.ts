@@ -342,6 +342,58 @@ describe("CLI", () => {
     expect(await exists(path.join(codexRoot, "AGENTS.md"))).toBe(true)
   })
 
+  test("convert supports full compound-engineering codex output with direct prompt entrypoints", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-codex-full-pack-"))
+    const codexRoot = path.join(tempRoot, ".codex")
+    const pluginRoot = path.join(import.meta.dir, "..", "plugins", "compound-engineering")
+
+    const proc = Bun.spawn([
+      "bun",
+      "run",
+      "src/index.ts",
+      "convert",
+      pluginRoot,
+      "--to",
+      "codex",
+      "--codex-home",
+      codexRoot,
+    ], {
+      cwd: path.join(import.meta.dir, ".."),
+      stdout: "pipe",
+      stderr: "pipe",
+    })
+
+    const exitCode = await proc.exited
+    const stdout = await new Response(proc.stdout).text()
+    const stderr = await new Response(proc.stderr).text()
+
+    if (exitCode !== 0) {
+      throw new Error(`CLI failed (exit ${exitCode}).\nstdout: ${stdout}\nstderr: ${stderr}`)
+    }
+
+    expect(stdout).toContain("Converted compound-engineering")
+    expect(await exists(path.join(codexRoot, "prompts", "ce-plan.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "prompts", "ce-brainstorm.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "prompts", "ce-compound-refresh.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "prompts", "deepen-plan.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "prompts", "document-review.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "prompts", "lfg.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "prompts", "sync.md"))).toBe(false)
+
+    expect(await exists(path.join(codexRoot, "skills", "ce:brainstorm", "SKILL.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "skills", "ce:plan", "SKILL.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "skills", "deepen-plan", "SKILL.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "skills", "document-review", "SKILL.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "skills", "repo-research-analyst", "SKILL.md"))).toBe(true)
+    expect(await exists(path.join(codexRoot, "AGENTS.md"))).toBe(true)
+
+    const cePlanPrompt = await fs.readFile(path.join(codexRoot, "prompts", "ce-plan.md"), "utf8")
+    expect(cePlanPrompt).toContain("#$ARGUMENTS")
+    expect(cePlanPrompt).toContain("If the workflow input above is empty")
+    expect(cePlanPrompt).toContain("compound-engineering.recipes.yaml")
+    expect(cePlanPrompt).toContain("rp-investigate")
+  })
+
   test("install supports --also with codex output", async () => {
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "cli-also-"))
     const fixtureRoot = path.join(import.meta.dir, "fixtures", "sample-plugin")

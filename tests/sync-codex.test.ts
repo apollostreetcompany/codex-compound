@@ -47,6 +47,11 @@ describe("syncToCodex", () => {
     const skillPath = path.join(tempRoot, "skills", "skill-one")
     expect((await fs.lstat(skillPath)).isSymbolicLink()).toBe(true)
 
+    const agentsPath = path.join(tempRoot, "AGENTS.md")
+    const agentsContent = await fs.readFile(agentsPath, "utf8")
+    expect(agentsContent).toContain("BEGIN COMPOUND CODEX TOOL MAP")
+    expect(agentsContent).toContain("request_user_input")
+
     const content = await fs.readFile(configPath, "utf8")
     expect(content).toContain("[custom]")
     expect(content).toContain("[post]")

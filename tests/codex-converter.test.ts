@@ -58,6 +58,9 @@ describe("convertClaudeToCodex", () => {
     expect(parsedPrompt.data.description).toBe("Planning command")
     expect(parsedPrompt.data["argument-hint"]).toBe("[FOCUS]")
     expect(parsedPrompt.body).toContain("$workflows-plan")
+    expect(parsedPrompt.body).toContain("<command_input>")
+    expect(parsedPrompt.body).toContain("#$ARGUMENTS")
+    expect(parsedPrompt.body).toContain("If the command input above is empty")
     expect(parsedPrompt.body).toContain("Plan the work.")
 
     expect(bundle.skillDirs[0]?.name).toBe("existing-skill")
@@ -116,8 +119,90 @@ describe("convertClaudeToCodex", () => {
     expect(parsedPrompt.data.description).toBe("Planning workflow")
     expect(parsedPrompt.data["argument-hint"]).toBe("[feature]")
     expect(parsedPrompt.body).toContain("Use the ce:plan skill")
+    expect(parsedPrompt.body).toContain("<workflow_input>")
+    expect(parsedPrompt.body).toContain("#$ARGUMENTS")
+    expect(parsedPrompt.body).toContain("If the workflow input above is empty")
+    expect(parsedPrompt.body).toContain("compound-engineering.recipes.yaml")
+    expect(parsedPrompt.body).toContain("rp-investigate")
 
     expect(bundle.skillDirs.map((skill) => skill.name)).toEqual(["ce:plan"])
+  })
+
+  test("generates prompt wrappers for direct compound-engineering utility skills", () => {
+    const plugin: ClaudePlugin = {
+      ...fixturePlugin,
+      manifest: { name: "compound-engineering", version: "1.0.0" },
+      commands: [],
+      agents: [],
+      skills: [
+        {
+          name: "ce:plan",
+          description: "Planning workflow",
+          argumentHint: "[feature]",
+          sourceDir: "/tmp/plugin/skills/ce-plan",
+          skillPath: "/tmp/plugin/skills/ce-plan/SKILL.md",
+        },
+        {
+          name: "ce:work-beta",
+          description: "Experimental work workflow",
+          argumentHint: "[bead]",
+          sourceDir: "/tmp/plugin/skills/ce-work-beta",
+          skillPath: "/tmp/plugin/skills/ce-work-beta/SKILL.md",
+        },
+        {
+          name: "deepen-plan",
+          description: "Deepen a plan",
+          argumentHint: "[plan path]",
+          sourceDir: "/tmp/plugin/skills/deepen-plan",
+          skillPath: "/tmp/plugin/skills/deepen-plan/SKILL.md",
+        },
+        {
+          name: "document-review",
+          description: "Review a document",
+          sourceDir: "/tmp/plugin/skills/document-review",
+          skillPath: "/tmp/plugin/skills/document-review/SKILL.md",
+        },
+        {
+          name: "setup",
+          description: "Configure project settings",
+          sourceDir: "/tmp/plugin/skills/setup",
+          skillPath: "/tmp/plugin/skills/setup/SKILL.md",
+        },
+        {
+          name: "frontend-design",
+          description: "Design helper",
+          sourceDir: "/tmp/plugin/skills/frontend-design",
+          skillPath: "/tmp/plugin/skills/frontend-design/SKILL.md",
+        },
+      ],
+    }
+
+    const bundle = convertClaudeToCodex(plugin, {
+      agentMode: "subagent",
+      inferTemperature: false,
+      permissions: "none",
+    })
+
+    expect(bundle.prompts.map((prompt) => prompt.name)).toEqual([
+      "ce-plan",
+      "ce-work-beta",
+      "deepen-plan",
+      "document-review",
+      "setup",
+    ])
+    expect(bundle.prompts.find((prompt) => prompt.name === "frontend-design")).toBeUndefined()
+
+    const deepenPlanPrompt = parseFrontmatter(
+      bundle.prompts.find((prompt) => prompt.name === "deepen-plan")!.content,
+    )
+    expect(deepenPlanPrompt.body).toContain("compound-engineering.recipes.yaml")
+    expect(deepenPlanPrompt.body).toContain("rp-investigate")
+
+    const documentReviewPrompt = parseFrontmatter(
+      bundle.prompts.find((prompt) => prompt.name === "document-review")!.content,
+    )
+    expect(documentReviewPrompt.body).toContain("Use the document-review skill")
+    expect(documentReviewPrompt.body).toContain("#$ARGUMENTS")
   })
 
   test("does not apply compound workflow canonicalization to other plugins", () => {

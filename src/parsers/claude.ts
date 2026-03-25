@@ -104,7 +104,7 @@ async function loadSkills(skillsDirs: string[]): Promise<ClaudeSkill[]> {
   const skills: ClaudeSkill[] = []
   for (const file of skillFiles) {
     const raw = await readText(file)
-    const { data } = parseFrontmatter(raw)
+    const data = parseSkillFrontmatter(file, raw)
     const name = (data.name as string) ?? path.basename(path.dirname(file))
     const disableModelInvocation = data["disable-model-invocation"] === true ? true : undefined
     skills.push({
@@ -117,6 +117,18 @@ async function loadSkills(skillsDirs: string[]): Promise<ClaudeSkill[]> {
     })
   }
   return skills
+}
+
+function parseSkillFrontmatter(file: string, raw: string): Record<string, unknown> {
+  try {
+    return parseFrontmatter(raw).data
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.warn(
+      `Warning: failed to parse skill frontmatter for ${file}. Falling back to directory metadata. ${message}`,
+    )
+    return {}
+  }
 }
 
 async function loadHooks(root: string, hooksField?: ClaudeManifest["hooks"]): Promise<ClaudeHooks | undefined> {

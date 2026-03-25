@@ -1,4 +1,6 @@
 import { describe, expect, test } from "bun:test"
+import { promises as fs } from "fs"
+import os from "os"
 import path from "path"
 import { loadClaudePlugin } from "../src/parsers/claude"
 
@@ -89,6 +91,32 @@ describe("loadClaudePlugin", () => {
     expect(plugin.skills.map((skill) => skill.name).sort()).toEqual(["custom-skill", "default-skill"])
     expect(plugin.hooks?.hooks.PreToolUse?.[0]?.hooks[0]?.command).toBe("echo default")
     expect(plugin.hooks?.hooks.PostToolUse?.[0]?.hooks[0]?.command).toBe("echo custom")
+  })
+
+  test("keeps loading skills when one skill has malformed frontmatter", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "claude-plugin-skill-fallback-"))
+    await fs.mkdir(path.join(tempRoot, ".claude-plugin"), { recursive: true })
+    await fs.mkdir(path.join(tempRoot, "skills", "good-skill"), { recursive: true })
+    await fs.mkdir(path.join(tempRoot, "skills", "bad-skill"), { recursive: true })
+
+    await fs.writeFile(
+      path.join(tempRoot, ".claude-plugin", "plugin.json"),
+      JSON.stringify({ name: "compound-engineering", version: "1.0.0" }, null, 2),
+    )
+    await fs.writeFile(
+      path.join(tempRoot, "skills", "good-skill", "SKILL.md"),
+      ["---", "name: good-skill", "description: Valid skill", "---", "", "Body"].join("\n"),
+    )
+    await fs.writeFile(
+      path.join(tempRoot, "skills", "bad-skill", "SKILL.md"),
+      ["---", "name: bad-skill", "description: broken", "  invalid: yes", "---", "", "Body"].join("\n"),
+    )
+
+    const plugin = await loadClaudePlugin(tempRoot)
+
+    expect(plugin.skills.map((skill) => skill.name).sort()).toEqual(["bad-skill", "good-skill"])
+    const malformedSkill = plugin.skills.find((skill) => skill.name === "bad-skill")
+    expect(malformedSkill?.description).toBeUndefined()
   })
 
   test("rejects custom component paths that escape the plugin root", async () => {

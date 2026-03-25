@@ -35,6 +35,7 @@ https://developers.openai.com/codex/mcp
 - Prompt front matter supports `description:` and `argument-hint:`. citeturn3view0turn2view3
 - Prompt arguments support `$1`–`$9`, `$ARGUMENTS`, and named placeholders like `$FILE` provided as `KEY=value`. citeturn2view3
 - Codex ignores non-Markdown files in the prompts directory. citeturn2view3
+- Codex-Compound prompt wrappers should bind inline input explicitly with `$ARGUMENTS` and should tell Codex to ask explicitly and wait when required input is missing, rather than relying on vague pass-through prose.
 
 ## AGENTS.md instructions
 
@@ -52,6 +53,13 @@ https://developers.openai.com/codex/mcp
 - Inference: some existing tooling and user setups still use `.codex/skills/` and `~/.codex/skills/` as legacy compatibility paths, but those locations are not documented in the current OpenAI Codex skills docs linked above.
 - Codex also supports admin-scoped skills in `/etc/codex/skills` plus built-in system skills bundled with Codex. citeturn1view4
 - Skills can be invoked explicitly using `/skills` or `$skill-name`. citeturn3view3
+- Codex-Compound intentionally writes installed user-scoped skills to `~/.codex/skills/` in this repo for compatibility with the current converter/install path. Prompts remain the user-facing entrypoint surface.
+
+## Codex-Compound Conventions
+
+- Prompts are the entrypoint surface. Skills are the implementation surface.
+- Direct prompt wrappers should exist for all canonical `ce:*` workflows plus documented utility workflows with backing skill sources.
+- `compound-engineering.recipes.yaml` is the repo-local helper-skill recipe file. RepoPrompt is the mandatory v1 baseline; external vetted-library entries are catalog-only recommendations unless explicitly elevated later.
 
 ## MCP (Model Context Protocol)
 

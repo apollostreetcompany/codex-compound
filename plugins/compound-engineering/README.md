@@ -27,6 +27,16 @@ This is an ACP-backed handoff path, not a custom PTY implementation. The intende
 
 The bridge assumes Codex owns the planning session while OpenClaw remains the visible conversational relay. Attach/resume beyond the ACP thread-binding path is deferred.
 
+## Codex Prompt Surface
+
+When this plugin is converted to the `codex` target:
+
+- prompts are the user entrypoint surface under `~/.codex/prompts/`
+- installed skills live under `~/.codex/skills/`
+- prompt wrappers bind inline input explicitly with `$ARGUMENTS`
+- if required input is missing, the wrapper tells Codex to ask explicitly and wait instead of inventing context
+- `compound-engineering.recipes.yaml` provides repo-local helper-skill recipes; RepoPrompt is the mandatory v1 baseline and vetted external catalog entries remain recommendations only
+
 ## Components
 
 | Component | Count |

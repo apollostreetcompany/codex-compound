@@ -1,0 +1,131 @@
+version: 1
+
+source_groups:
+  repoprompt:
+    kind: builtin
+    description: RepoPrompt MCP-backed investigation and review skills. Mandatory baseline for codebase-aware Codex workflows.
+    catalog:
+      - id: rp-investigate
+        use_for: Deep repository investigation, architectural context, and constraints gathering
+      - id: rp-build
+        use_for: Implementation-oriented RepoPrompt workflow when building from selected context
+      - id: rp-review
+        use_for: Diff-aware review workflows and validation passes
+      - id: rp-reminder
+        use_for: Light reminder when a workflow should switch to RepoPrompt context
+
+  vetted-baseline:
+    kind: external_catalog
+    description: Curated external catalog from the vetted skill library. Catalog-only in v1; do not auto-install globally.
+    location_hint: /Users/borker/dev/skill-library-vetted
+    catalog:
+      - id: prompt-cache-maximizer
+        use_for: Prompt, cache, and session-contract planning or review when work touches runtime prompt behavior
+      - id: swiftui-pro
+        use_for: Conditional iOS and SwiftUI implementation or review support
+      - id: skill-audit
+        use_for: Conditional marketplace, skill-pack, and recipe-surface review only
+      - id: ui-workflow-recipes-asc-v1
+        use_for: Reference-only UI workflow recipe pack for future landing-page, iOS, and full-stack recipe mining
+
+workflows:
+  ce:brainstorm:
+    always_on:
+      - rp-investigate
+    recommended:
+      - document-review
+      - rp-reminder
+    source_groups:
+      - repoprompt
+      - vetted-baseline
+
+  ce:plan:
+    always_on:
+      - rp-investigate
+    recommended:
+      - document-review
+      - rp-build
+      - prompt-cache-maximizer
+    source_groups:
+      - repoprompt
+      - vetted-baseline
+
+  ce:plan-beta:
+    always_on:
+      - rp-investigate
+    recommended:
+      - document-review
+      - rp-build
+      - prompt-cache-maximizer
+    source_groups:
+      - repoprompt
+      - vetted-baseline
+
+  deepen-plan:
+    always_on:
+      - rp-investigate
+    recommended:
+      - rp-build
+      - document-review
+      - prompt-cache-maximizer
+    source_groups:
+      - repoprompt
+      - vetted-baseline
+
+  deepen-plan-beta:
+    always_on:
+      - rp-investigate
+    recommended:
+      - rp-build
+      - document-review
+      - prompt-cache-maximizer
+    source_groups:
+      - repoprompt
+      - vetted-baseline
+
+  ce:compound-refresh:
+    always_on:
+      - rp-investigate
+    recommended:
+      - document-review
+      - rp-review
+    source_groups:
+      - repoprompt
+      - vetted-baseline
+
+  ce:review:
+    always_on:
+      - rp-review
+    recommended:
+      - rp-investigate
+      - document-review
+      - skill-audit
+      - prompt-cache-maximizer
+      - swiftui-pro
+    source_groups:
+      - repoprompt
+      - vetted-baseline
+
+  ce:work:
+    always_on:
+      - file-todos
+    recommended:
+      - rp-investigate
+      - rp-build
+      - prompt-cache-maximizer
+      - swiftui-pro
+    source_groups:
+      - repoprompt
+      - vetted-baseline
+
+  ce:work-beta:
+    always_on:
+      - file-todos
+    recommended:
+      - rp-investigate
+      - rp-build
+      - prompt-cache-maximizer
+      - swiftui-pro
+    source_groups:
+      - repoprompt
+      - vetted-baseline

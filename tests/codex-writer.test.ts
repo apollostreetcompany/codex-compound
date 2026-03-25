@@ -264,4 +264,50 @@ Workflow handoff:
     expect(installedSkill).not.toContain("/prompts:settings")
     expect(installedSkill).not.toContain("https://prompts:www.proofeditor.ai")
   })
+
+  test("normalizes AskUserQuestion-only guidance in copied skills without double-rewriting compliant lines", async () => {
+    const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "codex-skill-questions-"))
+    const sourceSkillDir = path.join(tempRoot, "source-skill")
+    await fs.mkdir(sourceSkillDir, { recursive: true })
+    await fs.writeFile(
+      path.join(sourceSkillDir, "SKILL.md"),
+      `---
+name: ce:plan
+description: Planning workflow
+---
+
+Use **AskUserQuestion tool** to ask which source document to use, or whether to proceed without one.
+Refine the idea through collaborative dialogue using the **AskUserQuestion tool**:
+Already compliant: use the platform's blocking question tool when available (\`AskUserQuestion\` in Claude Code, \`request_user_input\` in Codex, \`ask_user\` in Gemini). Otherwise, present numbered options in chat and wait.
+After writing the plan file, use the **AskUserQuestion tool** to present these options:
+`,
+    )
+
+    const bundle: CodexBundle = {
+      prompts: [],
+      skillDirs: [{ name: "ce:plan", sourceDir: sourceSkillDir }],
+      generatedSkills: [],
+      invocationTargets: {
+        promptTargets: {},
+        skillTargets: {},
+      },
+    }
+
+    await writeCodexBundle(tempRoot, bundle)
+
+    const installedSkill = await fs.readFile(
+      path.join(tempRoot, ".codex", "skills", "ce:plan", "SKILL.md"),
+      "utf8",
+    )
+
+    expect(installedSkill).not.toContain("Use **AskUserQuestion tool**")
+    expect(installedSkill).toContain("request_user_input")
+    expect(installedSkill).toContain("ask_user")
+    expect(installedSkill).toContain("Otherwise, present numbered options in chat and wait.")
+    expect(
+      installedSkill.match(
+        /Already compliant: use the platform's blocking question tool when available/g,
+      )?.length,
+    ).toBe(1)
+  })
 })

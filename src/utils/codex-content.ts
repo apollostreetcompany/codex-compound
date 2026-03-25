@@ -69,7 +69,7 @@ export function transformContentForCodex(
     return `$${skillName} skill`
   })
 
-  return result
+  return normalizeQuestionToolLanguage(result)
 }
 
 export function normalizeCodexName(value: string): string {
@@ -83,4 +83,79 @@ export function normalizeCodexName(value: string): string {
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "")
   return normalized || "item"
+}
+
+const PLATFORM_QUESTION_TOOL_GUIDANCE = "Use the platform's blocking question tool when available (`AskUserQuestion` in Claude Code, `request_user_input` in Codex, `ask_user` in Gemini). Otherwise, present numbered options in chat and wait."
+
+function normalizeQuestionToolLanguage(body: string): string {
+  if (!body.includes("AskUserQuestion")) {
+    return body
+  }
+
+  let result = body
+  const exactReplacements = new Map<string, string>([
+    [
+      "Use **AskUserQuestion tool** to ask which source document to use, or whether to proceed without one.",
+      `${PLATFORM_QUESTION_TOOL_GUIDANCE} Ask which source document to use, or whether to proceed without one.`,
+    ],
+    [
+      "Refine the idea through collaborative dialogue using the **AskUserQuestion tool**:",
+      `Refine the idea through collaborative dialogue. ${PLATFORM_QUESTION_TOOL_GUIDANCE}`,
+    ],
+    [
+      "After writing the plan file, use the **AskUserQuestion tool** to present these options:",
+      `After writing the plan file, ${lowercaseFirst(PLATFORM_QUESTION_TOOL_GUIDANCE)} Present these options:`,
+    ],
+    [
+      "After writing the enhanced plan, use the **AskUserQuestion tool** to present these options:",
+      `After writing the enhanced plan, ${lowercaseFirst(PLATFORM_QUESTION_TOOL_GUIDANCE)} Present these options:`,
+    ],
+  ])
+
+  for (const [source, replacement] of exactReplacements) {
+    result = result.replaceAll(source, replacement)
+  }
+
+  const lines = result.split(/\r?\n/)
+  const normalizedLines = lines.map((line) => normalizeQuestionToolLine(line))
+  result = normalizedLines.join("\n")
+
+  result = result.replace(/\bskip all AskUserQuestion calls\b/g, "skip all interactive question steps")
+
+  return result
+}
+
+function normalizeQuestionToolLine(line: string): string {
+  if (!line.includes("AskUserQuestion")) return line
+  if (line.includes("request_user_input") || line.includes("ask_user")) return line
+
+  return line
+    .replace(
+      /using the \*\*AskUserQuestion tool\*\*/g,
+      `using the platform's blocking question tool when available (\`AskUserQuestion\` in Claude Code, \`request_user_input\` in Codex, \`ask_user\` in Gemini). Otherwise, present numbered options in chat and wait`,
+    )
+    .replace(
+      /using the AskUserQuestion tool/gi,
+      `using the platform's blocking question tool when available (\`AskUserQuestion\` in Claude Code, \`request_user_input\` in Codex, \`ask_user\` in Gemini). Otherwise, present numbered options in chat and wait`,
+    )
+    .replace(
+      /Use \*\*AskUserQuestion tool\*\* to /g,
+      `${PLATFORM_QUESTION_TOOL_GUIDANCE} Then `,
+    )
+    .replace(
+      /use the \*\*AskUserQuestion tool\*\* to /gi,
+      `${lowercaseFirst(PLATFORM_QUESTION_TOOL_GUIDANCE)} Then `,
+    )
+    .replace(
+      /Use AskUserQuestion tool to /g,
+      `${PLATFORM_QUESTION_TOOL_GUIDANCE} Then `,
+    )
+    .replace(
+      /use AskUserQuestion tool to /g,
+      `${lowercaseFirst(PLATFORM_QUESTION_TOOL_GUIDANCE)} Then `,
+    )
+}
+
+function lowercaseFirst(value: string): string {
+  return value.charAt(0).toLowerCase() + value.slice(1)
 }

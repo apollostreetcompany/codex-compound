@@ -7,6 +7,10 @@ import {
   transformContentForCodex,
   type CodexInvocationTargets,
 } from "../utils/codex-content"
+import {
+  formatCompoundEngineeringRecipeGuidance,
+  getDefaultCompoundEngineeringRecipes,
+} from "../recipes/compound-engineering"
 
 export type ClaudeToCodexOptions = ClaudeToOpenCodeOptions
 
@@ -18,9 +22,10 @@ export function convertClaudeToCodex(
 ): CodexBundle {
   const invocableCommands = plugin.commands.filter((command) => !command.disableModelInvocation)
   const applyCompoundWorkflowModel = shouldApplyCompoundWorkflowModel(plugin)
-  const canonicalWorkflowSkills = applyCompoundWorkflowModel
-    ? plugin.skills.filter((skill) => isCanonicalCodexWorkflowSkill(skill.name))
+  const directPromptSkills = applyCompoundWorkflowModel
+    ? plugin.skills.filter((skill) => isCompoundCodexPromptSkill(skill.name))
     : []
+  const compoundRecipes = applyCompoundWorkflowModel ? getDefaultCompoundEngineeringRecipes() : null
   const deprecatedWorkflowAliases = applyCompoundWorkflowModel
     ? plugin.skills.filter((skill) => isDeprecatedCodexWorkflowAlias(skill.name))
     : []
@@ -43,7 +48,7 @@ export function convertClaudeToCodex(
   }
 
   const workflowPromptNames = new Map<string, string>()
-  for (const skill of canonicalWorkflowSkills) {
+  for (const skill of directPromptSkills) {
     workflowPromptNames.set(
       skill.name,
       uniqueName(normalizeCodexName(skill.name), promptNames),
@@ -81,9 +86,9 @@ export function convertClaudeToCodex(
     const content = renderPrompt(command, commandSkill.name, invocationTargets)
     return { name: promptName, content }
   })
-  const workflowPrompts = canonicalWorkflowSkills.map((skill) => ({
+  const workflowPrompts = directPromptSkills.map((skill) => ({
     name: workflowPromptNames.get(skill.name)!,
-    content: renderWorkflowPrompt(skill),
+    content: renderWorkflowPrompt(skill, compoundRecipes),
   }))
 
   const agentSkills = plugin.agents.map((agent) =>
@@ -161,24 +166,70 @@ function renderPrompt(
   }
   const instructions = `Use the $${skillName} skill for this command and follow its instructions.`
   const transformedBody = transformContentForCodex(command.body, invocationTargets)
-  const body = [instructions, "", transformedBody].join("\n").trim()
+  const body = [
+    instructions,
+    renderPromptInputSection("command"),
+    transformedBody,
+  ].join("\n\n").trim()
   return formatFrontmatter(frontmatter, body)
 }
 
-function renderWorkflowPrompt(skill: ClaudeSkill): string {
+function renderWorkflowPrompt(
+  skill: ClaudeSkill,
+  recipes = getDefaultCompoundEngineeringRecipes(),
+): string {
   const frontmatter: Record<string, unknown> = {
     description: skill.description,
     "argument-hint": skill.argumentHint,
   }
+  const recipeGuidance = formatCompoundEngineeringRecipeGuidance(skill.name, recipes)
   const body = [
     `Use the ${skill.name} skill for this workflow and follow its instructions exactly.`,
-    "Treat any text after the prompt name as the workflow context to pass through.",
-  ].join("\n\n")
+    renderPromptInputSection("workflow"),
+    recipeGuidance,
+  ].filter(Boolean).join("\n\n")
   return formatFrontmatter(frontmatter, body)
+}
+
+function renderPromptInputSection(kind: "command" | "workflow"): string {
+  const label = `${kind}_input`
+  return [
+    `## ${kind === "command" ? "Command" : "Workflow"} Input`,
+    `<${label}>`,
+    "#$ARGUMENTS",
+    `</${label}>`,
+    "",
+    `If the ${kind} input above is present, treat it as the context to pass through.`,
+    `If the ${kind} input above is empty and this ${kind} requires user input, ask the user explicitly using the platform's blocking question tool when available (\`request_user_input\` in Codex). Otherwise, ask in chat and wait for the user's reply. Do not infer or invent missing requirements.`,
+  ].join("\n")
 }
 
 function isCanonicalCodexWorkflowSkill(name: string): boolean {
   return name.startsWith("ce:")
+}
+
+const DIRECT_COMPOUND_UTILITY_PROMPT_SKILLS = new Set([
+  "changelog",
+  "compound-docs",
+  "deepen-plan",
+  "deepen-plan-beta",
+  "document-review",
+  "feature-video",
+  "generate_command",
+  "lfg",
+  "report-bug-ce",
+  "reproduce-bug",
+  "resolve-pr-parallel",
+  "resolve-todo-parallel",
+  "setup",
+  "slfg",
+  "test-browser",
+  "test-xcode",
+  "triage",
+])
+
+function isCompoundCodexPromptSkill(name: string): boolean {
+  return isCanonicalCodexWorkflowSkill(name) || DIRECT_COMPOUND_UTILITY_PROMPT_SKILLS.has(name)
 }
 
 function isDeprecatedCodexWorkflowAlias(name: string): boolean {

@@ -2,6 +2,7 @@ import fs from "fs/promises"
 import path from "path"
 import type { ClaudeHomeConfig } from "../parsers/claude-home"
 import { renderCodexConfig } from "../targets/codex"
+import { ensureCodexAgentsFile } from "../utils/codex-agents"
 import { writeTextSecure } from "../utils/files"
 import { syncCodexCommands } from "./commands"
 import { syncSkills } from "./skills"
@@ -61,6 +62,8 @@ export async function syncToCodex(
 
     await writeTextSecure(configPath, newContent)
   }
+
+  await ensureCodexAgentsFile(outputRoot)
 }
 
 function escapeForRegex(value: string): string {

@@ -115,7 +115,7 @@ Attach-to-existing sessions and durable resume are intentionally deferred from t
 | Target | Output path | Notes |
 |--------|------------|-------|
 | `opencode` | `~/.config/opencode/` | Commands as `.md` files; `opencode.json` MCP config deep-merged; backups made before overwriting |
-| `codex` | `~/.codex/prompts` + `~/.codex/skills` | Claude commands become prompt + skill pairs; canonical `ce:*` workflow skills also get prompt wrappers; deprecated `workflows:*` aliases are omitted |
+| `codex` | `~/.codex/prompts` + `~/.codex/skills` | Commands become prompt + skill pairs; all `ce:*` workflow skills plus curated direct-entry utilities get prompt wrappers; deprecated `workflows:*` aliases are omitted; installs write only to `~/.codex/skills` in this repo |
 | `droid` | `~/.factory/` | Tool names mapped (`Bash`→`Execute`, `Write`→`Create`); namespace prefixes stripped |
 | `pi` | `~/.pi/agent/` | Prompts, skills, extensions, and `mcporter.json` for MCPorter interoperability |
 | `gemini` | `.gemini/` | Skills from agents; commands as `.toml`; namespaced commands become directories (`workflows:plan` → `commands/workflows/plan.toml`) |
@@ -128,6 +128,21 @@ Attach-to-existing sessions and durable resume are intentionally deferred from t
 All provider targets are experimental and may change as the formats evolve.
 
 </details>
+
+### Codex Prompt Surface
+
+Codex uses prompts as the user entrypoint surface and skills as the implementation surface.
+
+- Prompt wrappers live in `~/.codex/prompts/`.
+- Installed skills live in `~/.codex/skills/` only.
+- Prompt wrappers now bind inline input explicitly with `$ARGUMENTS` instead of relying on prose-only pass-through guidance.
+- If a workflow requires input and `$ARGUMENTS` is empty, the wrapper tells Codex to ask explicitly and wait instead of inventing missing context.
+- When `compound-engineering.recipes.yaml` is present, Codex prompt wrappers surface the workflow's helper-skill recipe. RepoPrompt is the mandatory baseline in v1; external vetted-library entries remain recommendations only.
+
+For `compound-engineering`, the Codex prompt surface includes:
+- all `ce:*` workflow skills, including beta variants
+- direct utility entrypoints such as `deepen-plan`, `document-review`, `compound-docs`, `setup`, `lfg`, `test-browser`, and similar documented top-level workflows
+- no `/sync` prompt, because there is no backing plugin skill/command source for it in v1
 
 ## Sync Personal Config
 
@@ -194,6 +209,7 @@ Supported sync targets:
 
 Notes:
 - Codex sync preserves non-managed `config.toml` content and now includes remote MCP servers.
+- Codex sync also preserves the managed compatibility block in `~/.codex/AGENTS.md`.
 - Command sync reuses each provider's existing Claude command conversion, so some targets receive prompts or workflows while others receive converted skills.
 - Copilot sync writes personal skills to `~/.copilot/skills/` and MCP config to `~/.copilot/mcp-config.json`.
 - Gemini sync writes MCP config to `~/.gemini/` and avoids mirroring skills that Gemini already discovers from `~/.agents/skills`, which prevents duplicate-skill warnings.
