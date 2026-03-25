@@ -1,4 +1,4 @@
-.PHONY: install test release-validate validate bead-status bead-ready
+.PHONY: install test release-validate validate bead-status bead-ready bootstrap-codex
 
 install:
 	bun install
@@ -18,3 +18,6 @@ bead-status:
 
 bead-ready:
 	bd ready
+
+bootstrap-codex:
+	./scripts/bootstrap-codex-compound.sh

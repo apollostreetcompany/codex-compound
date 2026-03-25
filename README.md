@@ -87,6 +87,34 @@ Then run `claude-dev-ce` instead of `claude` to test your changes. Your producti
 bun run src/index.ts install ./plugins/compound-engineering --to codex
 ```
 
+**Codex bootstrap script** — for a fresh machine or to recreate the same global install quickly:
+
+```bash
+./scripts/bootstrap-codex-compound.sh
+```
+
+The bootstrap script reuses the current checkout when run from this repo. For other machines, you can also run it directly from GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/apollostreetcompany/codex-compound/main/scripts/bootstrap-codex-compound.sh | bash
+```
+
+Useful environment overrides:
+
+```bash
+CODEX_HOME=~/.codex
+CODEX_COMPOUND_ROOT=/absolute/path/to/existing/checkout
+CODEX_COMPOUND_DIR=~/.local/share/codex-compound
+CODEX_COMPOUND_REF=main
+SKIP_BUN_INSTALL=1
+```
+
+The script ultimately runs the existing Codex conversion path:
+
+```bash
+bun run src/index.ts convert ./plugins/compound-engineering --to codex --codex-home ~/.codex
+```
+
 **Other targets** — same pattern, swap the target:
 
 ```bash

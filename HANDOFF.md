@@ -1,7 +1,7 @@
 # HANDOFF.md - Codex-Compound
 
 ## Current Status
-Bead 9 is complete: the Codex target now behaves like a real Codex-native workflow pack with explicit `#$ARGUMENTS` prompt wrappers, portable ask-user guidance in installed skills, repo-local helper-skill recipes, and a clean full-pack install path into `~/.codex`. The global Codex home now contains the full `compound-engineering` skill surface plus direct prompt entrypoints for the `ce:*` workflows and selected utilities. The clean OpenClaw upload artifact remains available at `/Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip`. The next practical step is to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
+Bead 10 is complete: the repo now includes a reusable Codex bootstrap script at `/Users/borker/dev/codex-compound/scripts/bootstrap-codex-compound.sh` plus a `make bootstrap-codex` entrypoint. The script reuses an existing checkout when available, otherwise clones or updates `codex-compound` into a stable local directory, then installs the full `compound-engineering` prompt/skill pack into `~/.codex` using the same convert flow validated in Bead 9. The clean OpenClaw upload artifact remains available at `/Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip`. The next practical step is still to run the OpenClaw-driven comparison pass against the RES Snatcher test case.
 
 ## Delivered
 - Imported upstream baseline content into `/Users/borker/dev/codex-compound`.
@@ -61,6 +61,13 @@ Bead 9 is complete: the Codex target now behaves like a real Codex-native workfl
   - copied skills under `/Users/borker/.codex/skills/`
   - converted agent skills such as `repo-research-analyst`
   - no `/Users/borker/.codex/prompts/sync.md`
+- Added `scripts/bootstrap-codex-compound.sh`, which:
+  - reuses `CODEX_COMPOUND_ROOT` or the current checkout when available
+  - otherwise clones or updates `codex-compound` from `https://github.com/apollostreetcompany/codex-compound.git`
+  - supports `CODEX_HOME`, `CODEX_COMPOUND_DIR`, `CODEX_COMPOUND_REF`, and `SKIP_BUN_INSTALL`
+  - installs the full `compound-engineering` bundle into the requested Codex home with `bun run src/index.ts convert ./plugins/compound-engineering --to codex --codex-home ...`
+- Added `make bootstrap-codex` as the local convenience entrypoint for the same script.
+- Documented the bootstrap flow in `README.md`, including current-checkout usage, a GitHub raw-script invocation example, and the supported environment overrides.
 
 ## Validation Evidence
 - `bun test` -> pass (364 tests)
@@ -109,6 +116,10 @@ Bead 9 is complete: the Codex target now behaves like a real Codex-native workfl
 - `bun run src/index.ts convert ./plugins/compound-engineering --to codex --codex-home ~/.codex` -> pass; full plugin converted into `/Users/borker/.codex`
 - `sed -n '1,80p' /Users/borker/.codex/prompts/ce-plan.md /Users/borker/.codex/prompts/deepen-plan.md /Users/borker/.codex/prompts/lfg.md` -> pass; wrappers now contain explicit `#$ARGUMENTS` sections and recipe guidance where configured
 - `rg -n "request_user_input|compound-engineering\\.recipes\\.yaml|rp-investigate|AskUserQuestion" /Users/borker/.codex/skills/ce:plan/SKILL.md /Users/borker/.codex/skills/deepen-plan/SKILL.md /Users/borker/.codex/skills/setup/SKILL.md` -> pass; installed skills now mention `request_user_input` and preserve already-compliant cross-platform guidance
+- `bun test tests/bootstrap-script.test.ts` -> pass
+- `bun test` -> pass (390 tests)
+- `bun run release:validate` -> pass after adding the bootstrap script
+- `git diff --check` -> pass
 - `unzip -l /Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering-openclaw-clean.zip` -> pass; archive contains only generated extension content
 - `find /Users/borker/Downloads/codex-compound-openclaw-upload/compound-engineering -maxdepth 2 \\( -name 'AGENTS.md' -o -name 'CONTINUITY.md' -o -name 'HANDOFF.md' -o -name 'MISTAKES.md' \\)` -> no output
 
@@ -123,6 +134,7 @@ Bead 9 is complete: the Codex target now behaves like a real Codex-native workfl
 - The first OpenClaw bridge cut is ACP-first. It assumes `@openclaw/acpx`, Codex CLI on the OpenClaw host, and thread-bound ACP sessions rather than a custom plugin-managed PTY.
 - Generated OpenClaw command identity is canonicalized at conversion time, so namespaced command registrations and `skills/cmd-*` directories cannot drift apart.
 - The Codex install path in this repo writes user-facing prompts and skills only under `~/.codex/prompts` and `~/.codex/skills`.
+- The supported cross-machine Codex reinstall path is now `scripts/bootstrap-codex-compound.sh` or `make bootstrap-codex`; the script can either reuse a checkout or manage its own clone/update path before reinstalling into `~/.codex`.
 - RepoPrompt is the mandatory helper baseline in `compound-engineering.recipes.yaml`. External vetted-library entries (`prompt-cache-maximizer`, `swiftui-pro`, `skill-audit`) are recommendations only, not auto-installed surfaces.
 
 ## Immediate Follow-Ups
@@ -132,9 +144,11 @@ Bead 9 is complete: the Codex target now behaves like a real Codex-native workfl
 4. Decide whether attach/resume support belongs in the next bridge bead.
 5. Decide whether OpenClaw personal command sync remains a warning path or gains a documented conversion surface.
 6. Decide which imported surfaces remain core versus compatibility.
+7. Decide whether the bootstrap script should stay repo-level or become the primary published install surface for Codex-Compound.
 
 ## Recent Bead Commits
 - `debcedb1aaff51b4ddc04ca8968b7cdca9f9e7f4` contains the Bead 9 implementation, which ports the full Codex prompt and skill surface, adds explicit `#$ARGUMENTS` prompt wrappers, recipe-guided helper skill recommendations, portable ask-user normalization, tolerant skill loading, and the repaired `frontend-design` frontmatter.
+- `UNRECORDED` will become the Bead 10 implementation commit, which adds the reusable Codex bootstrap script, `make bootstrap-codex`, README usage docs, and an end-to-end bootstrap integration test.
 - `41902bff49e6316a021a90fe2fda9fbee0d4b8b9` contains Bead 8, which records the expanded global Codex prompt/skill surface for documentation and deeper-planning workflows plus the targeted-installer caveat around the malformed `frontend-design` skill frontmatter.
 - `5504f975a02a58d50a241624e3d3ddc0fce3ddd7` contains Bead 7, which records the minimal global Codex visibility install and the clean OpenClaw upload artifact path and caveats.
 - `9ec45ea29e99ebd81ea873fc2875962aa8bc90ca` contains Bead 6, which normalizes OpenClaw command registration and command-skill directory names together and adds a written-bundle runtime regression for namespaced commands.
